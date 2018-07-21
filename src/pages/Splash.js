@@ -6,6 +6,6 @@ const Splash = () => (
   <Page centerContent>
     <Spinner />
   </Page>
-)
+);
 
 export default Splash;

@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import FormState from '../components/FormState';
-import { Page, Container, Col } from '../components/Layout';
+import { Page, Container } from '../components/Layout';
 import { Title } from '../components/Typography';
 import { updateUserProfile } from '../utils/session';
 import FormName from './promptName/Form';
@@ -28,7 +27,7 @@ class PromptName extends Component {
 
   handleDisplayNameChange(ev) {
     this.setState({ displayName: ev.target.value });
-  };
+  }
 
   render() {
     const { displayName, loading, error } = this.state;

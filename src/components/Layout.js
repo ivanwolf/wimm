@@ -8,7 +8,7 @@ export const Page = styled.div`
   height: 100vh;
   display: flex;
   justify-content: center;
-  ${props => props.centerContent && css`
+  ${({ centerContent }) => centerContent && css`
   align-items: center;
   `}
 `;
@@ -18,13 +18,13 @@ export const Container = styled.div`
   flex: 1;
   flex-direction: column;
   padding: 1rem;
-  ${props => props.marginBottom && css`
+  ${({ marginBottom }) => marginBottom && css`
   margin-bottom: 5rem;
   `}
-`
+`;
 
 export const Col = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
-`
+`;
