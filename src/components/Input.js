@@ -71,6 +71,7 @@ export const ShowPasswordButton = styled.button`
   top: 17px;
   z-index: 1;
   position: absolute;
+  outline: none;
   color: ${colors.violetteDark};
   font-size: 12px;
   ${({ error }) => error && css`

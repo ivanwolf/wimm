@@ -15,3 +15,7 @@ export const signInOrCrateAccount = onError => (email, password) => {
 export const updateUserProfile = data => firebase.auth().currentUser.updateProfile(data);
 
 export const getCurrentUser = () => firebase.auth().currentUser;
+
+export const signOut = () => {
+  firebase.auth().signOut();
+};

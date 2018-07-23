@@ -1,26 +1,48 @@
-import React from 'react';
-import firebase from 'firebase';
+import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
-import { getCurrentUser } from '../utils/session';
+import { getCurrentUser, signOut } from '../utils/session';
 import { Page, Container } from '../components/Layout';
+import AppBar from '../components/AppBar';
 
-const Home = () => {
-  const signOut = () => {
-    firebase.auth().signOut();
-  };
-
-  if (!getCurrentUser().displayName) {
-    return <Redirect to="/username" />;
+class Home extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      openMenu: false,
+      openForm: false,
+    };
+    this.onMenuClick = this.onMenuClick.bind(this);
+    this.onAddClick = this.onAddClick.bind(this);
   }
-  return (
-    <Page centerContent>
-      <Container marginBottom>
-        <button type="button" onClick={signOut}>
-          Adiós
-        </button>
-      </Container>
-    </Page>
-  );
-};
+
+  onMenuClick() {
+    this.setState(state => ({
+      openMenu: !state.openMenu,
+    }));
+  }
+
+  onAddClick() {
+    this.setState(state => ({
+      openForm: !state.openForm,
+    }));
+  }
+
+  render() {
+    if (!getCurrentUser().displayName) {
+      return <Redirect to="/username" />;
+    }
+    const { openForm } = this.state;
+    return (
+      <Page>
+        <AppBar openForm={openForm} onAddClick={this.onAddClick} />
+        <Container marginTop>
+          <button type="button" onClick={signOut}>
+            Adiós
+          </button>
+        </Container>
+      </Page>
+    );
+  }
+}
 
 export default Home;

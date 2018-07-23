@@ -9,7 +9,7 @@ export const Page = styled.div`
   display: flex;
   justify-content: center;
   ${({ centerContent }) => centerContent && css`
-  align-items: center;
+    align-items: center;
   `}
 `;
 
@@ -21,6 +21,9 @@ export const Container = styled.div`
   ${({ marginBottom }) => marginBottom && css`
   margin-bottom: 5rem;
   `}
+  ${({ marginTop }) => marginTop && css`
+    margin-top: 4rem;
+  `} 
 `;
 
 export const Col = styled.div`
