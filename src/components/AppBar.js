@@ -45,12 +45,12 @@ const HiddenIcon = styled(Icon)`
 `;
 
 
-const AppBar = ({ openForm, onAddClick }) => {
+const AppBar = ({ openForm, onAddClick, onMenuClick }) => {
   const date = new Date();
   const title = openForm ? 'Agregar registro' : date.toDateString();
   return (
     <AppBarWrapper>
-      <IconWrapper>
+      <IconWrapper onClick={onMenuClick}>
         <HiddenIcon hidden={openForm} name="menu" />
       </IconWrapper>
       <DateWrapper>
@@ -66,6 +66,7 @@ const AppBar = ({ openForm, onAddClick }) => {
 AppBar.propTypes = {
   openForm: PropTypes.bool.isRequired,
   onAddClick: PropTypes.func.isRequired,
+  onMenuClick: PropTypes.func.isRequired,
 };
 
 export default AppBar;

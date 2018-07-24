@@ -5,7 +5,7 @@ import { Container } from './Layout';
 import colors from '../config/colors';
 
 
-const DrawerWrapper = styled.div`
+export const DrawerWrapper = styled.div`
   position: fixed;
   top: 0;
   right: 0;

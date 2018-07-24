@@ -4,6 +4,7 @@ import { getCurrentUser, signOut } from '../utils/session';
 import { getUserLocation, getNearbyPlaces } from '../utils/maps';
 import { Page, Container } from '../components/Layout';
 import RegisterForm from './home/RegisterForm';
+import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
 
@@ -11,7 +12,7 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      openMenu: false,
+      openMenu: true,
       openForm: false,
       location: null,
       places: [],
@@ -68,13 +69,18 @@ class Home extends Component {
   }
 
   render() {
-    if (!getCurrentUser().displayName) {
+    const username = getCurrentUser().displayName;
+    if (!username) {
       return <Redirect to="/username" />;
     }
-    const { openForm, locationLoading, places } = this.state;
+    const { openForm, locationLoading, places, openMenu } = this.state;
     return (
       <Page>
-        <AppBar openForm={openForm} onAddClick={this.onAddClick} />
+        <AppBar
+          openForm={openForm}
+          onAddClick={this.onAddClick}
+          onMenuClick={this.onMenuClick}
+        />
         <Drawer active={openForm}>
           <RegisterForm
             locationLoading={locationLoading}
@@ -82,10 +88,14 @@ class Home extends Component {
             places={places}
           />
         </Drawer>
+        <SideMenu
+          active={openMenu}
+          onOverlayClick={this.onMenuClick}
+          username={username}
+          onSignOutClick={signOut}
+        />
         <Container marginTop>
-          <button type="button" onClick={signOut}>
-            Adiós
-          </button>
+          Hola
         </Container>
       </Page>
     );
