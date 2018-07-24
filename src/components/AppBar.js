@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import Icon from './Icon';
+import colors from '../config/colors';
 
 const AppBarWrapper = styled.div`
   display: flex;
@@ -9,7 +10,9 @@ const AppBarWrapper = styled.div`
   top: 0;
   left: 0;
   right: 0;
-  align-items: center;f
+  align-items: center;
+  z-index: 1;
+  height: 4rem;
 `;
 
 const DateWrapper = styled.div`
@@ -23,7 +26,7 @@ const IconWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 1rem;
+  margin: 0 1rem;
   width: 2rem;
 `;
 
@@ -44,13 +47,14 @@ const HiddenIcon = styled(Icon)`
 
 const AppBar = ({ openForm, onAddClick }) => {
   const date = new Date();
+  const title = openForm ? 'Agregar registro' : date.toDateString();
   return (
     <AppBarWrapper>
       <IconWrapper>
         <HiddenIcon hidden={openForm} name="menu" />
       </IconWrapper>
       <DateWrapper>
-        {date.toDateString()}
+        {title}
       </DateWrapper>
       <IconWrapper onClick={onAddClick}>
         <RotateIcon rotate={openForm} name="add" />
