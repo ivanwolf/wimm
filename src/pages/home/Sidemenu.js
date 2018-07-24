@@ -3,13 +3,14 @@ import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { Container } from '../../components/Layout';
 import colors from '../../config/colors';
+import pkg from '../../../package.json';
 
 const SideMenuWrapper = styled.div`
   position: fixed;
   right: 4rem;
   left: 0;
   top: 0;
-  bottom: 0;
+  min-height: 100vh;
   transition: transform .5s ease;
   transform: translateX(-100vw);
   background-color: ${colors.white};
@@ -26,7 +27,7 @@ const Overlay = styled.div`
   background-color: ${colors.gray};
   top: 0;
   right: 0;
-  bottom: 0;
+  min-height: 100vh;
   left: 0;
   opacity: 0;
   transition: opacity .5s ease;
@@ -84,7 +85,7 @@ const SideMenu = ({
           Cerrar sesión
         </SignOutButton>
         <div>
-          v0.1
+          {`v${pkg.version}`}
         </div>
       </Footer>
     </SideMenuWrapper>

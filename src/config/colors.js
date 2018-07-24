@@ -3,6 +3,7 @@ export default {
   violetteDark: '#7986cb',
   danger: '#ff5a5f',
   gray: '#666666',
-  grayLight: '#f0f0f0',
+  grayLight: '#c7c7c7',
+  grayLighter: '#f5f5f5',
   white: '#ffffff',
 };

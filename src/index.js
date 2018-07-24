@@ -2,8 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import firebase from 'firebase';
-import App from './App';
-import Login from './pages/Login';
+import Loadable from 'react-loadable';
 import Splash from './pages/Splash';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
@@ -20,6 +19,16 @@ const config = {
 firebase.initializeApp(config);
 
 registerServiceWorker();
+
+const Login = Loadable({
+  loader: () => import('./pages/Login'),
+  loading: Splash,
+})
+
+const App = Loadable({
+  loader: () => import('./App'),
+  loading: Splash,
+})
 
 const renderApp = () => {
   ReactDOM.render(
