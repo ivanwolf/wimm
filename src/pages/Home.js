@@ -12,7 +12,7 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      openMenu: true,
+      openMenu: false,
       openForm: false,
       location: null,
       places: [],
