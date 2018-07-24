@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import colors from '../config/colors';
 
-const StyledInput = styled.input`
+export const StyledInput = styled.input`
   height: 3rem;
   font-size: 16px;
   border-radius: 3px;
-  margin-bottom: 7px;
   outline: none;
   border-style: none;
   background-color: ${colors.white}
@@ -34,14 +33,14 @@ const StyledInput = styled.input`
   `}
 `;
 
-const ErrorText = styled.div`
+export const ErrorText = styled.div`
   height: 15px;
   color: ${colors.danger};
   font-size: small;
-  margin-bottom: 7px;
+  margin: 7px 0;
 `;
 
-const TextInputWrapper = styled.div`
+export const TextInputWrapper = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;

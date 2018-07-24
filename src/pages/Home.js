@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { Page, Container } from '../components/Layout';
+import RegisterForm from './home/RegisterForm'
+import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
 
 class Home extends Component {
@@ -9,7 +11,7 @@ class Home extends Component {
     super(props);
     this.state = {
       openMenu: false,
-      openForm: false,
+      openForm: true,
     };
     this.onMenuClick = this.onMenuClick.bind(this);
     this.onAddClick = this.onAddClick.bind(this);
@@ -35,6 +37,9 @@ class Home extends Component {
     return (
       <Page>
         <AppBar openForm={openForm} onAddClick={this.onAddClick} />
+        <Drawer active={openForm}>
+          <RegisterForm />
+        </Drawer>
         <Container marginTop>
           <button type="button" onClick={signOut}>
             Adiós
