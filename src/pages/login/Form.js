@@ -36,7 +36,8 @@ class LoginForm extends Component {
             onChange={onEmailChange}
             error={emailError}
             placeholder="Correo electrónico"
-            type="text"
+            type="email"
+            autocapitalize="none"
           />
           <PasswordInput
             value={password}

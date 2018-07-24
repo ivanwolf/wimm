@@ -10,7 +10,7 @@ export const DrawerWrapper = styled.div`
   top: 0;
   right: 0;
   left: 0;
-  bottom: 0;
+  min-height: 100vh;
   transition: transform .5s ease;
   transform: translateX(100vw);
   background-color: ${colors.white};

@@ -2,7 +2,6 @@ import React, { Fragment } from 'react';
 import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { Container } from '../../components/Layout';
-import { Button } from '../../components/Input';
 import colors from '../../config/colors';
 
 const SideMenuWrapper = styled.div`
@@ -94,7 +93,7 @@ const SideMenu = ({
 
 SideMenu.propTypes = {
   active: PropTypes.bool.isRequired,
-  children: PropTypes.node.isRequired,
+  onSignOutClick: PropTypes.func.isRequired,
   onOverlayClick: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
 };
