@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import styled, { css } from 'styled-components';
 import { TextInputWrapper, StyledInput, ErrorText } from './Input';
+import { SpinnerTwo } from './spinner/Spinner';
 import colors from '../config/colors';
 import Icon from './Icon';
 
@@ -63,6 +64,9 @@ const IconWrapper = styled.div`
   justify-content: center;
   align-items: center;
   height: 3rem;
+  ${({ loadingWrapper }) => loadingWrapper && css`
+    right: -5px;
+  `}
 `;
 
 const RotateIcon = styled(Icon)`
@@ -72,7 +76,7 @@ const RotateIcon = styled(Icon)`
   `}
 `;
 
-class Dropdown extends Component {
+class DropdownHOC extends Component {
   constructor(props) {
     super(props);
     this.state = { isOpen: false };
@@ -98,7 +102,7 @@ class Dropdown extends Component {
 
   render() {
     const { isOpen } = this.state;
-    const { value, options, error, placeholder } = this.props;
+    const { value, options, error, placeholder, renderIcon } = this.props;
     const currentOption = options.find(opt => opt.id === value);
     return (
       <DropdownWrapper>
@@ -110,9 +114,7 @@ class Dropdown extends Component {
           active={isOpen}
           placeholder={placeholder}
         />
-        <IconWrapper onClick={this.handleOpenMenu}>
-          <RotateIcon rotate={isOpen} name="keyboard_arrow_down" />
-        </IconWrapper>
+        {renderIcon(isOpen, this.handleOpenMenu)}
         <MenuWrapper active={isOpen}>
           {options.map(opt => (
             <MenuItem
@@ -132,11 +134,11 @@ class Dropdown extends Component {
   }
 }
 
-Dropdown.defaultProps = {
+DropdownHOC.defaultProps = {
   value: 1,
 };
 
-Dropdown.propTypes = {
+DropdownHOC.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape({
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
@@ -146,4 +148,41 @@ Dropdown.propTypes = {
   onSelect: PropTypes.func.isRequired,
 };
 
-export default Dropdown;
+export const Dropdown = props => (
+  <DropdownHOC
+    {...props}
+    renderIcon={(isOpen, handleOpenMenu) => (
+      <IconWrapper onClick={handleOpenMenu}>
+        <RotateIcon rotate={isOpen} name="keyboard_arrow_down" />
+      </IconWrapper>
+    )}
+  />
+);
+
+export const LocationDropdown = ({ locationLoading, getOptions, ...props }) => {
+  const handleIconClick = (isOpen, handleOpenMenu) => () => {
+    if (isOpen) handleOpenMenu();
+    else if (!locationLoading) {
+      getOptions();
+    }
+  };
+  const icon = locationLoading ? <SpinnerTwo /> : <Icon name="location_searching" />;
+  return (
+    <DropdownHOC
+      {...props}
+      renderIcon={(isOpen, handleOpenMenu) => (
+        <IconWrapper
+          onClick={handleIconClick(isOpen, handleOpenMenu)}
+          loadingWrapper={locationLoading}
+        >
+          {icon}
+        </IconWrapper>
+      )}
+    />
+  );
+};
+
+LocationDropdown.propTypes = {
+  locationLoading: PropTypes.bool.isRequired,
+  getOptions: PropTypes.func.isRequired,
+};
