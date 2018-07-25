@@ -3,17 +3,22 @@ import PropTypes from 'prop-types';
 import { Col } from '../../components/Layout';
 import { TextInput, Button } from '../../components/Input';
 import { Dropdown, LocationDropdown } from '../../components/Dropdown';
+import { getCurrentUser } from '../../utils/session';
+import {
+  createActivity, createPlace, updateLabel, updatePlace,
+} from '../../utils/firestore';
+import { load } from 'grpc';
 
 class ActivityForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
       sum: '',
-      method: '',
-      label: '',
-      sumError: '',
+      methodId: '',
+      labelId: '',
       detail: '',
       placeId: '',
+      sumError: '',
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSumChange = this.handleSumChange.bind(this);
@@ -23,21 +28,50 @@ class ActivityForm extends Component {
     this.handlePlaceChange = this.handlePlaceChange.bind(this);
   }
 
-  handleSubmit(ev) {
+  async handleSubmit(ev) {
     ev.preventDefault();
-    console.log(this.state);
+    await this.setState({ loading: true });
+    try {
+      const user = getCurrentUser();
+      const date = new Date();
+      const today = date.toLocaleDateString().split('/').join('-');
+      const createdAt = date.getTime();
+      const {
+        sum, placeId, methodId, labelId, detail,
+      } = this.state;
+      const { places } = this.props;
+  
+      await createActivity(user, {
+        createdAt,
+        sum,
+        placeId,
+        methodId,
+        labelId,
+        detail,
+      });
+      await createPlace(user, {
+        id: placeId,
+        name: places.find(place => place.id === placeId).name,
+      });
+      await updateLabel(user, labelId, today);
+      await updatePlace(user, placeId, today);
+      this.setState({ loading: false });
+    } catch (err) {
+      console.log(err);
+    }
+
   }
 
   handleSumChange(ev) {
     this.setState({ sum: ev.target.value });
   }
 
-  handleMethodChange(method) {
-    this.setState({ method });
+  handleMethodChange(methodId) {
+    this.setState({ methodId });
   }
 
-  handleLabelChange(label) {
-    this.setState({ label });
+  handleLabelChange(labelId) {
+    this.setState({ labelId });
   }
 
   hanldeDetailChange(ev) {
@@ -50,7 +84,7 @@ class ActivityForm extends Component {
 
   render() {
     const {
-      sum, sumError, method, label, detail, placeId,
+      sum, sumError, methodId, labelId, detail, placeId, loading,
     } = this.state;
     const {
       places,
@@ -79,14 +113,14 @@ class ActivityForm extends Component {
           />
           <Dropdown
             options={methods}
-            value={method}
+            value={methodId}
             onSelect={this.handleMethodChange}
             placeholder="Método de pago"
             loading={methodsLoading}
           />
           <Dropdown
             options={labels}
-            value={label}
+            value={labelId}
             onSelect={this.handleLabelChange}
             placeholder="Etiqueta"
             loading={labelsLoading}
@@ -100,7 +134,7 @@ class ActivityForm extends Component {
           />
           <Button
             type="submit"
-            disabled={!sum}
+            disabled={!sum || loading}
           >
             OK
           </Button>

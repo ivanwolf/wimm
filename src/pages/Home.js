@@ -10,14 +10,13 @@ import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
-import { homedir } from 'os';
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       openMenu: false,
-      openForm: true,
+      openForm: false,
       places: [],
       placesLoading: false,
       methods: [],
@@ -97,7 +96,6 @@ class Home extends Component {
         />
         <Drawer active={openForm}>
           <ActivityForm
-            getUserLocationOptions={this.getUserLocationOptions}
             places={places}
             placesLoading={placesLoading}
             methods={methods}

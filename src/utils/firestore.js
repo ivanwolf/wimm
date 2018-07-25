@@ -44,3 +44,25 @@ const toArray = (query) => {
 export const getUserMethods = user => getUserDoc(user).collection('methods').get().then(toArray);
 
 export const getUserLabels = user => getUserDoc(user).collection('labels').get().then(toArray);
+
+export const createActivity = (user, data) => (
+  getUserDoc(user).collection('activities').doc().set(data)
+);
+
+export const createPlace = (user, place) => (
+  getUserDoc(user).collection('places').doc(place.id).set({
+    name: place.name,
+  })
+);
+
+export const updateLabel = (user, labelId, today) => (
+  getUserDoc(user).collection('labels').doc(labelId).update({
+    [today]: true,
+  })
+);
+
+export const updatePlace = (user, placeId, today) => (
+  getUserDoc(user).collection('places').doc(placeId).update({
+    [today]: true,
+  })
+);
