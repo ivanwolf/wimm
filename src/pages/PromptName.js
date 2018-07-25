@@ -22,7 +22,7 @@ class PromptName extends Component {
     const { history } = this.props;
     this.setState({ loading: true });
     updateUserProfile({ displayName }).then(() => {
-      history.replace('/');
+      history.replace('/setup');
     }).catch((error) => {
       if (error.code === 'auth/network-request-failed') {
         this.setState({ error: 'No hay conexión a internet', loading: false });

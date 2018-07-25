@@ -52,14 +52,14 @@ class ActivityForm extends Component {
     const {
       sum, sumError, method, label, detail, placeId,
     } = this.state;
-    const { locationLoading, getUserLocationOptions, places } = this.props;
-    const options = [
-      { id: 1, name: 'Crédito' },
-      { id: 2, name: 'Efectivo' },
-      { id: 3, name: 'Débito' },
-      { id: 4, name: 'Agregar' },
-      { id: 5, name: 'Agregar más' },
-    ];
+    const {
+      places,
+      placesLoading,
+      methods,
+      methodsLoading,
+      labels,
+      labelsLoading,
+    } = this.props;
     return (
       <form onSubmit={this.handleSubmit}>
         <Col>
@@ -74,21 +74,22 @@ class ActivityForm extends Component {
             options={places}
             value={placeId}
             onSelect={this.handlePlaceChange}
-            getOptions={getUserLocationOptions}
-            locationLoading={locationLoading}
             placeholder="Lugar"
+            loading={placesLoading}
           />
           <Dropdown
-            options={options}
+            options={methods}
             value={method}
             onSelect={this.handleMethodChange}
             placeholder="Método de pago"
+            loading={methodsLoading}
           />
           <Dropdown
-            options={options}
+            options={labels}
             value={label}
             onSelect={this.handleLabelChange}
             placeholder="Etiqueta"
+            loading={labelsLoading}
           />
           <TextInput
             type="text"
@@ -109,9 +110,18 @@ class ActivityForm extends Component {
   }
 }
 
+const optionsTypes = PropTypes.arrayOf(PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+}));
+
 ActivityForm.propTypes = {
-  locationLoading: PropTypes.bool.isRequired,
-  getUserLocationOptions: PropTypes.func.isRequired,
+  places: optionsTypes.isRequired,
+  methods: optionsTypes.isRequired,
+  labels: optionsTypes.isRequired,
+  placesLoading: PropTypes.bool.isRequired,
+  methodsLoading: PropTypes.bool.isRequired,
+  labelsLoading: PropTypes.bool.isRequired,
 };
 
 export default ActivityForm;

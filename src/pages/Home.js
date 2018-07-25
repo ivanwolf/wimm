@@ -1,27 +1,43 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
-import { getUserLocation, getNearbyPlaces } from '../utils/maps';
+import { getUserPlaces } from '../utils/maps';
+import { getUserMethods, getUserLabels } from '../utils/firestore';
 import { Page, Container } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
 import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
+import withLocation from '../hocs/LocationState';
+import { homedir } from 'os';
 
 class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
       openMenu: false,
-      openForm: false,
-      location: null,
+      openForm: true,
       places: [],
-      locationLoading: false,
+      placesLoading: false,
+      methods: [],
+      methodsLoading: true,
+      labels: [],
+      labelsLoading: true,
     };
     this.onMenuClick = this.onMenuClick.bind(this);
     this.onAddClick = this.onAddClick.bind(this);
-    this.getUserLocationOptions = this.getUserLocationOptions.bind(this);
-    this.shoudlFetchPlaces = this.shoudlFetchPlaces.bind(this);
+    this.getPlacesOptions = this.getPlacesOptions.bind(this);
+  }
+
+  componentDidMount() {
+    const user = getCurrentUser();
+    getUserMethods(user).then((methods) => {
+      this.setState({ methods, methodsLoading: false });
+    });
+    getUserLabels(user).then((labels) => {
+      this.setState({ labels, labelsLoading: false });
+    });
   }
 
   onMenuClick() {
@@ -33,40 +49,28 @@ class Home extends Component {
   onAddClick() {
     const { openForm } = this.state;
     if (!openForm) {
-      this.getUserLocationOptions();
+      this.getPlacesOptions();
       this.setState({ openForm: true });
     } else {
       this.setState({ openForm: false });
     }
   }
 
-  getUserLocationOptions() {
-    this.setState({ locationLoading: true });
-    getUserLocation().then((position) => {
-      if (this.shoudlFetchPlaces(position.coords)) {
-        getNearbyPlaces(position.coords).then((places) => {
-          this.setState({
-            places,
-            locationLoading: false,
-            location: {
-              longitude: position.coords.longitude,
-              latitude: position.coords.latitude,
-            },
-          });
+  getPlacesOptions() {
+    const { location, handleLocationChange } = this.props;
+    const { places } = this.state;
+    this.setState({ placesLoading: true });
+    getUserPlaces(location, places)
+      .then((res) => {
+        handleLocationChange(res.location);
+        this.setState({
+          places: res.places,
+          placesLoading: false,
         });
-      } else {
-        this.setState({ locationLoading: false });
-      }
-    });
-  }
-
-  shoudlFetchPlaces(newPostion) {
-    const { location } = this.state;
-    if (location) {
-      const { latitude, longitude } = location;
-      return (newPostion.latitude - latitude) ** 2 + (newPostion.longitude - longitude) ** 2 > 0.01;
-    }
-    return true;
+      })
+      .catch(() => {
+        this.setState({ placesLoading: false });
+      });
   }
 
   render() {
@@ -74,7 +78,16 @@ class Home extends Component {
     if (!username) {
       return <Redirect to="/username" />;
     }
-    const { openForm, locationLoading, places, openMenu } = this.state;
+    const {
+      openForm,
+      placesLoading,
+      places,
+      openMenu,
+      methods,
+      methodsLoading,
+      labels,
+      labelsLoading,
+    } = this.state;
     return (
       <Page>
         <AppBar
@@ -84,9 +97,13 @@ class Home extends Component {
         />
         <Drawer active={openForm}>
           <ActivityForm
-            locationLoading={locationLoading}
             getUserLocationOptions={this.getUserLocationOptions}
             places={places}
+            placesLoading={placesLoading}
+            methods={methods}
+            methodsLoading={methodsLoading}
+            labels={labels}
+            labelsLoading={labelsLoading}
           />
         </Drawer>
         <SideMenu
@@ -103,4 +120,16 @@ class Home extends Component {
   }
 }
 
-export default Home;
+Home.defaultProps = {
+  location: null,
+};
+
+Home.propTypes = {
+  location: PropTypes.shape({
+    latitude: PropTypes.number.isRequired,
+    longitude: PropTypes.number.isRequired,
+  }),
+  handleLocationChange: PropTypes.func.isRequired,
+};
+
+export default withLocation(Home);
