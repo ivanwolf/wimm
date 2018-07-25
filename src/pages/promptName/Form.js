@@ -1,17 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Col } from '../../components/Layout';
-import { TextInput, Button } from '../../components/Input';
+import { TextInput, Button, ErrorText } from '../../components/Input';
 
 const NameForm = ({
-  onSubmit, displayName, onNameChange, nameError, loading,
+  onSubmit, displayName, onNameChange, error, loading,
 }) => (
   <form onSubmit={onSubmit}>
     <Col>
       <TextInput
         value={displayName}
         onChange={onNameChange}
-        error={nameError}
         placeholder="John Doe"
         type="text"
       />
@@ -21,6 +20,9 @@ const NameForm = ({
       >
         Continuar
       </Button>
+      <ErrorText>
+        {error}
+      </ErrorText>
     </Col>
   </form>
 );
@@ -29,7 +31,7 @@ NameForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
   displayName: PropTypes.string.isRequired,
   onNameChange: PropTypes.func.isRequired,
-  nameError: PropTypes.string.isRequired,
+  error: PropTypes.string.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 

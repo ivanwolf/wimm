@@ -55,8 +55,12 @@ export const TextInput = ({ error, ...props }) => (
   </TextInputWrapper>
 );
 
+TextInput.defaultProps = {
+  error: '',
+};
+
 TextInput.propTypes = {
-  error: PropTypes.string.isRequired,
+  error: PropTypes.string,
 };
 
 
@@ -114,7 +118,6 @@ export const Button = styled.button`
   height: 3rem;
   font-size: 16px;
   color: ${colors.white};
-  margin-bottom: 15px;
   border-radius: 3px;
   background-color: ${colors.violetteDark}
   border: 2px solid ${colors.violetteDark};

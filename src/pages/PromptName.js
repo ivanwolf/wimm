@@ -19,9 +19,15 @@ class PromptName extends Component {
   handleSubmit(ev) {
     ev.preventDefault();
     const { displayName } = this.state;
+    const { history } = this.props;
     this.setState({ loading: true });
     updateUserProfile({ displayName }).then(() => {
-      this.props.history.replace('/');
+      history.replace('/');
+    }).catch((error) => {
+      if (error.code === 'auth/network-request-failed') {
+        this.setState({ error: 'No hay conexión a internet', loading: false });
+      }
+      console.log(error);
     });
   }
 
@@ -30,7 +36,6 @@ class PromptName extends Component {
   }
 
   render() {
-    const { displayName, loading, error } = this.state;
     return (
       <Page centerContent>
         <Container marginBottom>
@@ -39,10 +44,8 @@ class PromptName extends Component {
           </Title>
           <FormName
             onSubmit={this.handleSubmit}
-            displayName={displayName}
             onNameChange={this.handleDisplayNameChange}
-            nameError={error}
-            loading={loading}
+            {...this.state}
           />
         </Container>
       </Page>
