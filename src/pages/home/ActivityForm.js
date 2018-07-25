@@ -4,7 +4,7 @@ import { Col } from '../../components/Layout';
 import { TextInput, Button } from '../../components/Input';
 import { Dropdown, LocationDropdown } from '../../components/Dropdown';
 
-class RegisterForm extends Component {
+class ActivityForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -108,9 +108,9 @@ class RegisterForm extends Component {
   }
 }
 
-RegisterForm.propTypes = {
+ActivityForm.propTypes = {
   locationLoading: PropTypes.bool.isRequired,
   getUserLocationOptions: PropTypes.func.isRequired,
 };
 
-export default RegisterForm;
+export default ActivityForm;

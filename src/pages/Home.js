@@ -3,7 +3,7 @@ import { Redirect } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { getUserLocation, getNearbyPlaces } from '../utils/maps';
 import { Page, Container } from '../components/Layout';
-import RegisterForm from './home/RegisterForm';
+import ActivityForm from './home/ActivityForm';
 import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
@@ -82,7 +82,7 @@ class Home extends Component {
           onMenuClick={this.onMenuClick}
         />
         <Drawer active={openForm}>
-          <RegisterForm
+          <ActivityForm
             locationLoading={locationLoading}
             getUserLocationOptions={this.getUserLocationOptions}
             places={places}

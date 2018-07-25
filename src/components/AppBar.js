@@ -47,7 +47,7 @@ const HiddenIcon = styled(Icon)`
 
 const AppBar = ({ openForm, onAddClick, onMenuClick }) => {
   const date = new Date();
-  const title = openForm ? 'Agregar registro' : date.toDateString();
+  const title = openForm ? 'Nueva Actividad' : date.toDateString();
   return (
     <AppBarWrapper>
       <IconWrapper onClick={onMenuClick}>
