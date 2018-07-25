@@ -49,6 +49,7 @@ const renderSplash = () => {
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
+    console.log(user.uid);
     renderApp();
   } else {
     renderLogin();

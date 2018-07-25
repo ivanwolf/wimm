@@ -135,7 +135,7 @@ class DropdownHOC extends Component {
 }
 
 DropdownHOC.defaultProps = {
-  value: 1,
+  value: '',
 };
 
 DropdownHOC.propTypes = {
@@ -143,8 +143,7 @@ DropdownHOC.propTypes = {
     id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
   })).isRequired,
-  value: PropTypes.number,
-  error: PropTypes.string.isRequired,
+  value: PropTypes.string,
   onSelect: PropTypes.func.isRequired,
 };
 

@@ -16,6 +16,7 @@ class Home extends Component {
       openForm: false,
       location: null,
       places: [],
+      locationLoading: false,
     };
     this.onMenuClick = this.onMenuClick.bind(this);
     this.onAddClick = this.onAddClick.bind(this);

@@ -95,6 +95,7 @@ class ActivityForm extends Component {
             value={detail}
             onChange={this.hanldeDetailChange}
             placeholder="Detalle"
+            error=""
           />
           <Button
             type="submit"
