@@ -1,8 +1,11 @@
 /* global google */
 
-export const getUserLocation = () => new Promise((resolve) => {
+export const getUserPosition = () => new Promise((resolve) => {
   navigator.geolocation.getCurrentPosition((postition) => {
-    resolve(postition);
+    resolve({
+      latitude: postition.coords.latitude,
+      longitude: postition.coords.longitude,
+    });
   });
 });
 
@@ -26,3 +29,26 @@ export const getNearbyPlaces = ({ latitude, longitude }) => {
     });
   });
 };
+
+const shoudlFetchPlaces = (currentPosition, newPosition) => {
+  if (currentPosition) {
+    const { latitude, longitude } = currentPosition;
+    return (newPosition.latitude - latitude) ** 2 + (newPosition.longitude - longitude) ** 2 > 0.01;
+  }
+  return true;
+};
+
+export const getUserPlaces = (currentPosition, currentPlaces) => (
+  getUserPosition().then((newPosition) => {
+    if (shoudlFetchPlaces(currentPosition, newPosition)) {
+      return getNearbyPlaces(newPosition).then(places => ({
+        places,
+        location: newPosition,
+      }));
+    }
+    return {
+      places: currentPlaces,
+      location: newPosition,
+    };
+  })
+);

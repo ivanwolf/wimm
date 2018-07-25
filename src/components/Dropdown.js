@@ -64,7 +64,7 @@ const IconWrapper = styled.div`
   justify-content: center;
   align-items: center;
   height: 3rem;
-  ${({ loadingWrapper }) => loadingWrapper && css`
+  ${({ loading }) => loading && css`
     right: -5px;
   `}
 `;
@@ -80,13 +80,16 @@ class DropdownHOC extends Component {
   constructor(props) {
     super(props);
     this.state = { isOpen: false };
-    this.handleOpenMenu = this.handleOpenMenu.bind(this);
+    this.toggleOpenMenu = this.toggleOpenMenu.bind(this);
   }
 
-  handleOpenMenu() {
-    this.setState(state => ({
-      isOpen: !state.isOpen,
-    }));
+  toggleOpenMenu() {
+    const { loading } = this.props;
+    if (!loading) {
+      this.setState(state => ({
+        isOpen: !state.isOpen,
+      }));
+    }
   }
 
   handleItemClick(id) {
@@ -102,19 +105,23 @@ class DropdownHOC extends Component {
 
   render() {
     const { isOpen } = this.state;
-    const { value, options, error, placeholder, renderIcon } = this.props;
+    const {
+      value, options, error, placeholder, renderIcon, loading,
+    } = this.props;
     const currentOption = options.find(opt => opt.id === value);
     return (
       <DropdownWrapper>
         <DropdownInput
           value={currentOption ? currentOption.name : ''}
           error={error}
-          onClick={this.handleOpenMenu}
+          onClick={this.toggleOpenMenu}
           readOnly
           active={isOpen}
           placeholder={placeholder}
         />
-        {renderIcon(isOpen, this.handleOpenMenu)}
+        <IconWrapper loading={loading} onClick={this.toggleOpenMenu}>
+          {loading ? <SpinnerTwo /> : renderIcon(isOpen)}
+        </IconWrapper>
         <MenuWrapper active={isOpen}>
           {options.map(opt => (
             <MenuItem
@@ -136,52 +143,32 @@ class DropdownHOC extends Component {
 
 DropdownHOC.defaultProps = {
   value: '',
+  error: '',
 };
 
 DropdownHOC.propTypes = {
   options: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
   })).isRequired,
   value: PropTypes.string,
+  error: PropTypes.string,
   onSelect: PropTypes.func.isRequired,
+  renderIcon: PropTypes.func.isRequired,
+  placeholder: PropTypes.string.isRequired,
 };
 
 export const Dropdown = props => (
   <DropdownHOC
     {...props}
-    renderIcon={(isOpen, handleOpenMenu) => (
-      <IconWrapper onClick={handleOpenMenu}>
-        <RotateIcon rotate={isOpen} name="keyboard_arrow_down" />
-      </IconWrapper>
-    )}
+    renderIcon={isOpen => <RotateIcon rotate={isOpen} name="keyboard_arrow_down" />}
   />
 );
 
-export const LocationDropdown = ({ locationLoading, getOptions, ...props }) => {
-  const handleIconClick = (isOpen, handleOpenMenu) => () => {
-    if (isOpen) handleOpenMenu();
-    else if (!locationLoading) {
-      getOptions();
-    }
-  };
-  const icon = locationLoading ? <SpinnerTwo /> : <Icon name="location_searching" />;
-  return (
-    <DropdownHOC
-      {...props}
-      renderIcon={(isOpen, handleOpenMenu) => (
-        <IconWrapper
-          onClick={handleIconClick(isOpen, handleOpenMenu)}
-          loadingWrapper={locationLoading}
-        >
-          {icon}
-        </IconWrapper>
-      )}
-    />
-  );
-};
 
-LocationDropdown.propTypes = {
-  locationLoading: PropTypes.bool.isRequired,
-  getOptions: PropTypes.func.isRequired,
-};
+export const LocationDropdown = props => (
+  <DropdownHOC
+    {...props}
+    renderIcon={() => <Icon name="location_searching" />}
+  />
+);

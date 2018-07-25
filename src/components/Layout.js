@@ -11,6 +11,12 @@ export const Page = styled.div`
   ${({ centerContent }) => centerContent && css`
     align-items: center;
   `}
+  ${({ column }) => column && css`
+    flex-direction: column;
+  `}
+  ${({ marginBottom }) => marginBottom && css`
+    margin-bottom: 5rem;
+  `}
 `;
 
 export const Container = styled.div`
@@ -19,7 +25,7 @@ export const Container = styled.div`
   flex-direction: column;
   padding: 1rem;
   ${({ marginBottom }) => marginBottom && css`
-  margin-bottom: 5rem;
+    margin-bottom: 5rem;
   `}
   ${({ marginTop }) => marginTop && css`
     margin-top: 4rem;
