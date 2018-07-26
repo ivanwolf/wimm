@@ -25,6 +25,7 @@ export const getNearbyPlaces = ({ latitude, longitude }) => {
       resolve(res.map(place => ({
         id: place.id,
         name: place.name,
+        address: place.vicinity,
       })));
     });
   });
