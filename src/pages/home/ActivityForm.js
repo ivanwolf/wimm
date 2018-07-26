@@ -7,7 +7,6 @@ import { getCurrentUser } from '../../utils/session';
 import {
   createActivity, createPlace, updateLabel, updatePlace,
 } from '../../utils/firestore';
-import { load } from 'grpc';
 
 class ActivityForm extends Component {
   constructor(props) {
@@ -32,34 +31,50 @@ class ActivityForm extends Component {
     ev.preventDefault();
     await this.setState({ loading: true });
     try {
-      const user = getCurrentUser();
-      const date = new Date();
-      const today = date.toLocaleDateString().split('/').join('-');
-      const createdAt = date.getTime();
       const {
         sum, placeId, methodId, labelId, detail,
       } = this.state;
-      const { places } = this.props;
-  
-      await createActivity(user, {
+      const {
+        places, methods, labels, onAddClick, addActivity,
+      } = this.props;
+      const createdAt = Date.now();
+      const place = places.find(pl => pl.id === placeId);
+      const method = methods.find(me => me.id === methodId);
+      const label = labels.find(la => la.id === labelId);
+      const user = getCurrentUser();
+      const activity = {
         createdAt,
-        sum,
-        placeId,
-        methodId,
-        labelId,
+        sum: parseInt(sum, 10),
+        method,
+        label,
         detail,
-      });
+        place,
+      };
+      await createActivity(user, activity);
+      // Add activity to local state;
+      addActivity(activity);
       await createPlace(user, {
         id: placeId,
-        name: places.find(place => place.id === placeId).name,
+        name: place.name,
+        address: place.address,
       });
-      await updateLabel(user, labelId, today);
-      await updatePlace(user, placeId, today);
-      this.setState({ loading: false });
+      // await updateLabel(user, labelId, today);
+      // await updatePlace(user, placeId, today);
+      // Clear state
+      await this.setState({
+        loading: false,
+        sum: '',
+        methodId: '',
+        labelId: '',
+        detail: '',
+        placeId: '',
+        sumError: '',
+      });
+      // Close form
+      onAddClick();
     } catch (err) {
       console.log(err);
     }
-
   }
 
   handleSumChange(ev) {
