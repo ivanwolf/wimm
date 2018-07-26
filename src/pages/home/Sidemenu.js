@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import styled, { css } from 'styled-components';
 import PropTypes from 'prop-types';
 import { Container } from '../../components/Layout';
+import { CleanButton } from '../../components/Input';
 import colors from '../../config/colors';
 import pkg from '../../../package.json';
 
@@ -58,14 +59,8 @@ const Footer = styled.div`
   }
 `;
 
-const SignOutButton = styled.button`
-  outline: none;
-  color: inherit;
+const SignOutButton = CleanButton.extend`
   font-size: 15px;
-  border: none;
-  background-color: ${colors.white};
-  padding: 0;
-  margin: 0;
 `;
 
 const SideMenu = ({

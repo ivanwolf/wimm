@@ -63,21 +63,25 @@ TextInput.propTypes = {
   error: PropTypes.string,
 };
 
+export const CleanButton = styled.button`
+  outline: none;
+  border: none;
+  background-color: inherit;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+`;
 
 export const PasswordInputWrapper = styled.div`
   display: flex;
   position: relative;
 `;
 
-export const ShowPasswordButton = styled.button`
+export const ShowPasswordButton = CleanButton.extend`
   right: 1rem;
   top: 17px;
   z-index: 1;
   position: absolute;
-  outline: none;
-  border: none;
-  background-color: ${colors.white};
-  color: ${colors.violetteDark};
   font-size: 12px;
   ${({ error }) => error && css`
     color: ${colors.danger};
