@@ -14,32 +14,14 @@ const ActivityWrapper = styled.div`
   margin-bottom: 15px;
   border-left: 6px solid;
   background-color: ${colors.grayLighter};
-  color: ${colors.gray}
-  ${({ color }) => color === 'lunch' && css`
-    border-color: ${colors.danger};
-  `}
-  ${({ color }) => color === 'dress' && css`
-    border-color: ${colors.blueLight};
-  `}
-  ${({ color }) => color === 'super' && css`
-    border-color: ${colors.orange};
-  `}
-
+  border-color: ${({ color }) => color}
 `;
 
 const Header = styled.div`
   font-weight: 600;
   font-size: 16px;
   margin-bottom: 4px;
-  ${({ color }) => color === 'lunch' && css`
-    color: ${colors.danger};
-  `}
-  ${({ color }) => color === 'dress' && css`
-    color: ${colors.blueLight};
-  `}
-  ${({ color }) => color === 'super' && css`
-    color: ${colors.orange};
-  `}
+  color: ${({ color }) => color};
 `;
 
 const Item = styled.div`
@@ -48,10 +30,11 @@ const Item = styled.div`
 
 const ActivityCard = ({ activity }) => {
   const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  console.log(activity.label);
   return (
-    <ActivityWrapper color={activity.label.id}>
+    <ActivityWrapper color={activity.label.color}>
       <Col>
-        <Header color={activity.label.id}>
+        <Header color={activity.label.color}>
           {`${activity.label.name}`}
         </Header>
         <Item>
@@ -65,7 +48,7 @@ const ActivityCard = ({ activity }) => {
         </Item>
       </Col>
       <Col>
-        <Header color={activity.label.id}>
+        <Header color={activity.label.color}>
           {`$${formatSum(activity.sum)}`}
         </Header>
         <Item>

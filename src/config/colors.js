@@ -8,6 +8,8 @@ export default {
   white: '#ffffff',
   green: '#5ecd69',
   yellow: '#ffcb2b',
+  purple: '#5b54ea',
   blueLight: '#4285f4',
+  blue: '#3c5b9c',
   orange: '#f5820b',
 };
