@@ -23,13 +23,16 @@ export const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 1rem;
+  padding: 0 1rem;
   ${({ marginBottom }) => marginBottom && css`
     margin-bottom: 5rem;
   `}
   ${({ marginTop }) => marginTop && css`
     margin-top: 4rem;
-  `} 
+  `}
+  ${({ centerContent }) => centerContent && css`
+    align-items: center;
+  `}
 `;
 
 export const Col = styled.div`
