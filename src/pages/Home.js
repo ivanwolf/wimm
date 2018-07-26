@@ -3,12 +3,14 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { getUserPlaces } from '../utils/maps';
-import { getUserMethods, getUserLabels } from '../utils/firestore';
+import { getUserMethods, getUserLabels, getUserActivity } from '../utils/firestore';
 import { Page, Container } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
+import ActivityList from './home/ActivityList';
 import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
+import Alert from '../components/Alert';
 import withLocation from '../hocs/LocationState';
 
 class Home extends Component {
@@ -23,10 +25,13 @@ class Home extends Component {
       methodsLoading: true,
       labels: [],
       labelsLoading: true,
+      activities: [],
+      activitiesLoading: true,
     };
     this.onMenuClick = this.onMenuClick.bind(this);
     this.onAddClick = this.onAddClick.bind(this);
     this.getPlacesOptions = this.getPlacesOptions.bind(this);
+    this.addActivity = this.addActivity.bind(this);
   }
 
   componentDidMount() {
@@ -36,6 +41,9 @@ class Home extends Component {
     });
     getUserLabels(user).then((labels) => {
       this.setState({ labels, labelsLoading: false });
+    });
+    getUserActivity(user).then((activities) => {
+      this.setState({ activities, activitiesLoading: false });
     });
   }
 
@@ -72,6 +80,14 @@ class Home extends Component {
       });
   }
 
+  addActivity(activity) {
+    const { activities } = this.state;
+    this.setState({
+      activities: [activity, ...activities],
+    });
+  }
+
+
   render() {
     const username = getCurrentUser().displayName;
     if (!username) {
@@ -86,6 +102,8 @@ class Home extends Component {
       methodsLoading,
       labels,
       labelsLoading,
+      activities,
+      activitiesLoading,
     } = this.state;
     return (
       <Page>
@@ -102,6 +120,8 @@ class Home extends Component {
             methodsLoading={methodsLoading}
             labels={labels}
             labelsLoading={labelsLoading}
+            onAddClick={this.onAddClick}
+            addActivity={this.addActivity}
           />
         </Drawer>
         <SideMenu
@@ -111,7 +131,7 @@ class Home extends Component {
           onSignOutClick={signOut}
         />
         <Container marginTop>
-          Hola
+          <ActivityList activities={activities} loading={activitiesLoading} />
         </Container>
       </Page>
     );

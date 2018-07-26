@@ -35,7 +35,7 @@ const toArray = (query) => {
   query.forEach((doc) => {
     docs.push({
       id: doc.id,
-      name: doc.data().name,
+      ...doc.data(),
     });
   });
   return docs;
@@ -45,6 +45,18 @@ export const getUserMethods = user => getUserDoc(user).collection('methods').get
 
 export const getUserLabels = user => getUserDoc(user).collection('labels').get().then(toArray);
 
+
+export const getUserActivity = (user) => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return getUserDoc(user)
+    .collection('activities')
+    .get()
+    // .where('createdAt', '>', today.getTime())
+    // .orderBy('createdAt', 'desc')
+    .then(toArray);
+};
+
 export const createActivity = (user, data) => (
   getUserDoc(user).collection('activities').doc().set(data)
 );
@@ -52,6 +64,7 @@ export const createActivity = (user, data) => (
 export const createPlace = (user, place) => (
   getUserDoc(user).collection('places').doc(place.id).set({
     name: place.name,
+    address: place.address,
   })
 );
 
