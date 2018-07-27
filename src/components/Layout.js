@@ -33,6 +33,10 @@ export const Container = styled.div`
   ${({ centerContent }) => centerContent && css`
     align-items: center;
   `}
+  ${({ verticalPadding }) => verticalPadding && css`
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+  `}
 `;
 
 export const Col = styled.div`

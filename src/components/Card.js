@@ -6,7 +6,7 @@ export const CardHeader = styled.div`
   font-size: 16px;
   height: 16px;
   margin-bottom: 4px;
-  color: ${({ color }) => color};
+  color: ${({ color }) => color || colors.violetteDark};
 `;
 
 export const CardItem = styled.div`
@@ -18,13 +18,15 @@ export const Card = styled.div`
   border-radius: 3px;
   display: flex;
   margin-bottom: 0.7rem;
-  border-left: 6px solid;
+  border-left: 6px solid ${colors.violetteDark};
+  color: ${colors.gray}
   background-color: ${colors.grayLighter};
 `;
 
 export const WhiteCard = Card.extend`
   background-color: ${colors.white};
   border-left: 6px solid ${colors.white};
+  color: ${colors.violetteDark}
   margin-bottom: 0;
   padding: 0.2rem 0.65rem;
 `;

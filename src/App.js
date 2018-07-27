@@ -6,9 +6,9 @@ import InitialSetup from './pages/InitialSetup';
 
 const App = () => (
   <Switch>
-    <Route exact path="/" component={Home} />
     <Route path="/username" component={PromptName} />
     <Route path="/setup" component={InitialSetup} />
+    <Route path="/" component={Home} />
   </Switch>
 );
 

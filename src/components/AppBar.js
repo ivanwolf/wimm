@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import Icon from './Icon';
 import colors from '../config/colors';
@@ -35,6 +36,9 @@ const RotateIcon = styled(Icon)`
   ${({ rotate }) => rotate && css`
     transform: rotate(45deg) scale(1.1);
   `}
+  ${({ hidden }) => hidden && css`
+    opacity: 0;
+  `}
 `;
 
 const HiddenIcon = styled(Icon)`
@@ -44,20 +48,26 @@ const HiddenIcon = styled(Icon)`
   `}
 `;
 
+const getTitle = (openForm, pathname) => {
+  if (openForm) return 'Agregar Movimiento';
+  if (pathname === '/add_founds') return 'Añadir fondos';
+  return 'MangoApp';
+};
 
-const AppBar = ({ openForm, onAddClick, onMenuClick }) => {
-  const date = new Date();
-  const title = openForm ? 'Nueva Actividad' : date.toDateString();
+const AppBar = ({ openForm, onAddClick, onMenuClick, location, history }) => {
+  const hideAdd = location.pathname === '/add_founds';
+  const leftIcon = location.pathname !== '/' ? 'arrow_back_ios' : 'menu'
+  const onLeftIconClick = location.pathname !== '/' ? history.goBack : onMenuClick;
   return (
     <AppBarWrapper>
-      <IconWrapper onClick={onMenuClick}>
-        <HiddenIcon hidden={openForm} name="menu" />
+      <IconWrapper onClick={onLeftIconClick}>
+        <HiddenIcon hidden={openForm} name={leftIcon} />
       </IconWrapper>
       <DateWrapper>
-        {title}
+        {getTitle(openForm, location.pathname)}
       </DateWrapper>
       <IconWrapper onClick={onAddClick}>
-        <RotateIcon rotate={openForm} name="add" />
+        <RotateIcon hidden={hideAdd} rotate={openForm} name="add" />
       </IconWrapper>
     </AppBarWrapper>
   );
@@ -69,4 +79,4 @@ AppBar.propTypes = {
   onMenuClick: PropTypes.func.isRequired,
 };
 
-export default AppBar;
+export default withRouter(AppBar);

@@ -6,13 +6,14 @@ import { getUserPlaces } from '../utils/maps';
 import {
   getUserMethods, getUserLabels, getUserActivity, getUserBalance,
 } from '../utils/firestore';
-import { Page, Container } from '../components/Layout';
+import { Page } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
 import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
 import Activity from './home/pages/Activity';
+import AddFounds from './home/pages/AddFounds';
 
 class Home extends Component {
   constructor(props) {
@@ -142,6 +143,10 @@ class Home extends Component {
           onSignOutClick={signOut}
         />
         <Switch>
+          <Route
+            path="/add_founds"
+            component={AddFounds}
+          />
           <Route
             path="/"
             render={() => (

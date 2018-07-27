@@ -1,5 +1,6 @@
 import React, { Fragment } from 'react';
 import styled, { css } from 'styled-components';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { Container } from '../../components/Layout';
 import { CleanButton } from '../../components/Input';
@@ -43,12 +44,12 @@ const Avatar = styled.div`
   background-color: ${colors.violette};
   color: ${colors.white};
   height: 8rem;
-  padding: 1rem;
+  padding: 0.7rem;
 `;
 
 const Footer = styled.div`
   display: flex;
-  padding: 1rem;
+  padding: 0.7rem;
   & > div {
     flex: 1;
   }
@@ -59,9 +60,45 @@ const Footer = styled.div`
   }
 `;
 
+const StyledLink = styled.a`
+  display: flex;
+  align-items: center;
+  height 2.5rem;
+  padding: 0 .5rem;
+  border-radius: 3px;
+  ${({ selected }) => selected && css`
+    font-weight: 500;
+    background-color: ${colors.violette};
+    color: ${colors.white};
+  `}
+`;
+
 const SignOutButton = CleanButton.extend`
   font-size: 15px;
+  padding: 0 0.5rem;
 `;
+
+const FunctionContext = React.createContext(() => {});
+
+const InnerLink = ({
+  history, to, location, children,
+}) => (
+  <FunctionContext.Consumer>
+    {closeMenu => (
+      <StyledLink
+        onClick={() => {
+          history.push(to);
+          closeMenu();
+        }}
+        selected={location.pathname === to}
+      >
+        {children}
+      </StyledLink>
+    )}
+  </FunctionContext.Consumer>
+);
+
+const Link = withRouter(InnerLink);
 
 const SideMenu = ({
   active, onOverlayClick, username, onSignOutClick,
@@ -72,9 +109,19 @@ const SideMenu = ({
       <Avatar>
         {username}
       </Avatar>
-      <Container>
-        Hola
-      </Container>
+      <FunctionContext.Provider value={onOverlayClick}>
+        <Container verticalPadding>
+          <Link to="/">
+            Movimientos
+          </Link>
+          <Link to="/add_founds">
+            Añadir fondos
+          </Link>
+          <Link to="/settings">
+            Configuración
+          </Link>
+        </Container>
+      </FunctionContext.Provider>
       <Footer>
         <SignOutButton type="button" onClick={onSignOutClick}>
           Cerrar sesión
@@ -86,6 +133,7 @@ const SideMenu = ({
     </SideMenuWrapper>
   </Fragment>
 );
+
 
 SideMenu.propTypes = {
   active: PropTypes.bool.isRequired,
