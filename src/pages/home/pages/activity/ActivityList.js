@@ -1,23 +1,37 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
+import { css } from 'styled-components';
 import { Col } from '../../../../components/Layout';
 import { SpinnerTwo } from '../../../../components/spinner/Spinner';
 import { formatSum } from '../../../../utils/format';
 import {
   Card, CardHeader, CardItem, WhiteCard,
 } from '../../../../components/Card';
+import Touchable from '../../../../components/Touchable';
 
 
 export const ActivityWrapper = Card.extend`
   border-left: 6px solid;
   border-color: ${({ color }) => color};
+  ${({ editMode }) => editMode && css`
+    opacity: .4;
+  `};
+
+  ${({ selected }) => selected && css`
+    opacity: 1;
+  `};
 `;
 
 
-const ActivityCard = ({ activity }) => {
+const ActivityCard = ({ activity, onClick, selected, editMode }) => {
   const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
   return (
-    <ActivityWrapper color={activity.label.color}>
+    <ActivityWrapper
+      selected={selected}
+      color={activity.label.color}
+      onClick={onClick}
+      editMode={editMode}
+    >
       <Col>
         <CardHeader color={activity.label.color}>
           {`${activity.label.name}`}
@@ -44,23 +58,45 @@ const ActivityCard = ({ activity }) => {
   );
 };
 
-const ActivityList = ({ activities, loading }) => {
-  if (loading) return <SpinnerTwo />;
+ActivityCard.propTypes = {
+  onClick: PropTypes.func.isRequired,
+};
+
+const ActivityList = ({
+  activities,
+  selectedActivities,
+  handleSelectActivity,
+}) => {
+  const editMode = selectedActivities.length > 0;
+  const selectActivity = id => () => handleSelectActivity(id);
   return (
     <Fragment>
       <WhiteCard>
         Movimientos
       </WhiteCard>
       {activities.map(act => (
-        <ActivityCard key={act.id} activity={act} />
+        <Touchable
+          key={act.id}
+          disabled={editMode}
+          onTouchSelect={selectActivity(act.id)}
+        >
+          <ActivityCard
+            editMode={editMode}
+            selected={selectedActivities.includes(act.id)}
+            activity={act}
+            onClick={editMode ? selectActivity(act.id) : () => {}}
+          />
+        </Touchable>
       ))}
     </Fragment>
   );
 };
 
+
 ActivityList.propTypes = {
   activities: PropTypes.array.isRequired,
-  loading: PropTypes.bool.isRequired,
+  selectedActivities: PropTypes.arrayOf(PropTypes.string).isRequired,
+  handleSelectActivity: PropTypes.func.isRequired,
 };
 
 export default ActivityList;

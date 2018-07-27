@@ -48,26 +48,60 @@ const HiddenIcon = styled(Icon)`
   `}
 `;
 
-const getTitle = (openForm, pathname) => {
-  if (openForm) return 'Agregar Movimiento';
+const getTitle = (editMode, openForm, pathname) => {
+  if (pathname === '/') {
+    if (editMode) return '';
+    if (openForm) return 'Agregar movimiento';
+    return 'MangoApp';
+  }
   if (pathname === '/add_founds') return 'Añadir fondos';
-  return 'MangoApp';
+  return '';
 };
 
-const AppBar = ({ openForm, onAddClick, onMenuClick, location, history }) => {
-  const hideAdd = location.pathname === '/add_founds';
-  const leftIcon = location.pathname !== '/' ? 'arrow_back_ios' : 'menu'
-  const onLeftIconClick = location.pathname !== '/' ? history.goBack : onMenuClick;
+const leftAction = (location, editMode, openMenu, goBack, clearEditMode) => {
+  if (location.pathname === '/') {
+    if (editMode) return clearEditMode;
+    return openMenu;
+  }
+  return goBack;
+};
+
+
+const AppBar = ({
+  openForm,
+  onAddClick,
+  onMenuClick,
+  location,
+  history,
+  clearSelectedActivities,
+  selectedActivitiesCount,
+}) => {
+  const editMode = selectedActivitiesCount > 0;
+  const hideAdd = location.pathname !== '/';
+  const leftIcon = location.pathname !== '/' || editMode ? 'arrow_back' : 'menu';
+  const rightIcon = editMode ? 'delete' : 'add';
+  const onLeftIconClick = leftAction(
+    location,
+    editMode,
+    onMenuClick,
+    history.goBack,
+    clearSelectedActivities,
+  );
   return (
     <AppBarWrapper>
       <IconWrapper onClick={onLeftIconClick}>
         <HiddenIcon hidden={openForm} name={leftIcon} />
       </IconWrapper>
       <DateWrapper>
-        {getTitle(openForm, location.pathname)}
+        {getTitle(editMode, openForm, location.pathname)}
       </DateWrapper>
+      {editMode && (
+        <IconWrapper onClick={onLeftIconClick}>
+          <HiddenIcon hidden={selectedActivitiesCount > 1} name="edit" />
+        </IconWrapper>
+      )}
       <IconWrapper onClick={onAddClick}>
-        <RotateIcon hidden={hideAdd} rotate={openForm} name="add" />
+        <RotateIcon hidden={hideAdd} rotate={openForm} name={rightIcon} />
       </IconWrapper>
     </AppBarWrapper>
   );

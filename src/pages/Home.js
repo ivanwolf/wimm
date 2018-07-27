@@ -31,11 +31,14 @@ class Home extends Component {
       activitiesLoading: true,
       balance: 0,
       balanceLoading: true,
+      selectedActivities: [],
     };
     this.onMenuClick = this.onMenuClick.bind(this);
     this.onAddClick = this.onAddClick.bind(this);
     this.getPlacesOptions = this.getPlacesOptions.bind(this);
     this.addActivity = this.addActivity.bind(this);
+    this.handleSelectActivity = this.handleSelectActivity.bind(this);
+    this.clearSelectedActivities = this.clearSelectedActivities.bind(this);
   }
 
   componentDidMount() {
@@ -95,6 +98,22 @@ class Home extends Component {
     });
   }
 
+  clearSelectedActivities() {
+    this.setState({ selectedActivities: [] });
+  }
+
+  handleSelectActivity(id) {
+    const { selectedActivities } = this.state;
+    if (selectedActivities.includes(id)) {
+      this.setState({
+        selectedActivities: selectedActivities.filter(actId => actId !== id),
+      });
+    } else {
+      this.setState({
+        selectedActivities: [id, ...selectedActivities],
+      });
+    }
+  }
 
   render() {
     const username = getCurrentUser().displayName;
@@ -103,9 +122,9 @@ class Home extends Component {
     }
     const {
       openForm,
+      openMenu,
       placesLoading,
       places,
-      openMenu,
       methods,
       methodsLoading,
       labels,
@@ -114,14 +133,17 @@ class Home extends Component {
       activitiesLoading,
       balance,
       balanceLoading,
+      selectedActivities,
     } = this.state;
     const isLoading = balanceLoading || activitiesLoading;
     return (
       <Page>
         <AppBar
+          selectedActivitiesCount={selectedActivities.length}
           openForm={openForm}
           onAddClick={this.onAddClick}
           onMenuClick={this.onMenuClick}
+          clearSelectedActivities={this.clearSelectedActivities}
         />
         <Drawer active={openForm}>
           <ActivityForm
@@ -156,6 +178,8 @@ class Home extends Component {
             path="/"
             render={() => (
               <Activity
+                handleSelectActivity={this.handleSelectActivity}
+                selectedActivities={selectedActivities}
                 activities={activities}
                 balance={balance}
                 loading={isLoading}
