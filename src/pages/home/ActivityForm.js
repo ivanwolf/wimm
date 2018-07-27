@@ -18,6 +18,7 @@ class ActivityForm extends Component {
       detail: '',
       placeId: '',
       sumError: '',
+      loading: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSumChange = this.handleSumChange.bind(this);

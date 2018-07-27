@@ -145,7 +145,12 @@ class Home extends Component {
         <Switch>
           <Route
             path="/add_founds"
-            component={AddFounds}
+            render={() => (
+              <AddFounds
+                methods={methods}
+                methodsLoading={methodsLoading}
+              />
+            )}
           />
           <Route
             path="/"
