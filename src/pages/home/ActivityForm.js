@@ -5,7 +5,7 @@ import { TextInput, Button } from '../../components/Input';
 import { Dropdown, LocationDropdown } from '../../components/Dropdown';
 import { getCurrentUser } from '../../utils/session';
 import {
-  createActivity, createPlace, updateLabel, updatePlace,
+  createActivity, createPlace, updateBalance,
 } from '../../utils/firestore';
 
 class ActivityForm extends Component {
@@ -35,7 +35,7 @@ class ActivityForm extends Component {
         sum, placeId, methodId, labelId, detail,
       } = this.state;
       const {
-        places, methods, labels, onAddClick, addActivity,
+        places, methods, labels, onAddClick, addActivity, balance,
       } = this.props;
       const createdAt = Date.now();
       const place = places.find(pl => pl.id === placeId);
@@ -53,11 +53,15 @@ class ActivityForm extends Component {
       await createActivity(user, activity);
       // Add activity to local state;
       addActivity(activity);
+      // update firestore
       await createPlace(user, {
         id: placeId,
         name: place.name,
         address: place.address,
       });
+      if (methodId === 'cash') {
+        await updateBalance(user, balance - activity.sum);
+      }
       // await updateLabel(user, labelId, today);
       // await updatePlace(user, placeId, today);
       // Clear state

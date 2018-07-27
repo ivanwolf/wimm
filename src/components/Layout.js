@@ -23,7 +23,7 @@ export const Container = styled.div`
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 0 1rem;
+  padding: 0 0.7rem;
   ${({ marginBottom }) => marginBottom && css`
     margin-bottom: 5rem;
   `}
@@ -38,5 +38,10 @@ export const Container = styled.div`
 export const Col = styled.div`
   display: flex;
   flex-direction: column;
-  flex: 1;
+  flex: ${({ flex }) => flex || '1'};
 `;
+
+export const Row = styled.div`
+  display: flex;
+`;
+

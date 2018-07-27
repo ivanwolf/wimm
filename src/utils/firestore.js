@@ -1,27 +1,29 @@
 import firebase from 'firebase';
 import { payMethods, labels } from '../config/initialSetup';
 
-let firestore = null;
-const getStore = () => {
-  if (firestore === null) {
-    firestore = firebase.firestore();
-    const settings = { timestampsInSnapshots: true};
-    firestore.settings(settings);
-  }
-  return firestore;
-};
+const firestore = firebase.firestore();
+const settings = { timestampsInSnapshots: true };
+firestore.settings(settings);
+
+const getStore = () => firestore;
 
 export const getUserDoc = user => getStore().collection('users').doc(user.uid);
+
+export const getUserBalance = user => getUserDoc(user).get().then((doc) => {
+  return doc.data().balance;
+});
 
 export const createInitialDocument = (user) => {
   payMethods.forEach(async (method) => {
     await getUserDoc(user).collection('methods').doc(method.id).set({
       name: method.name,
+      balance: 0,
     });
   });
   labels.forEach(async (label) => {
     await getUserDoc(user).collection('labels').doc(label.id).set({
       name: label.name,
+      color: label.color,
     });
   });
   return getUserDoc(user).set({
@@ -78,4 +80,8 @@ export const updatePlace = (user, placeId, today) => (
   getUserDoc(user).collection('places').doc(placeId).update({
     [today]: true,
   })
+);
+
+export const updateBalance = (user, balance) => (
+  getUserDoc(user).update({ balance })
 );

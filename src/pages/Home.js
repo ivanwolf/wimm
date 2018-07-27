@@ -3,15 +3,18 @@ import PropTypes from 'prop-types';
 import { Redirect } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { getUserPlaces } from '../utils/maps';
-import { getUserMethods, getUserLabels, getUserActivity } from '../utils/firestore';
+import { 
+  getUserMethods, getUserLabels, getUserActivity, getUserBalance,
+} from '../utils/firestore';
 import { Page, Container } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
 import ActivityList from './home/ActivityList';
 import SideMenu from './home/Sidemenu';
+import Summary from './home/Summary';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
-import Alert from '../components/Alert';
 import withLocation from '../hocs/LocationState';
+import { SpinnerTwo } from '../components/spinner/Spinner';
 
 class Home extends Component {
   constructor(props) {
@@ -27,6 +30,8 @@ class Home extends Component {
       labelsLoading: true,
       activities: [],
       activitiesLoading: true,
+      balance: 0,
+      balanceLoading: true,
     };
     this.onMenuClick = this.onMenuClick.bind(this);
     this.onAddClick = this.onAddClick.bind(this);
@@ -44,6 +49,9 @@ class Home extends Component {
     });
     getUserActivity(user).then((activities) => {
       this.setState({ activities, activitiesLoading: false });
+    });
+    getUserBalance(user).then((balance) => {
+      this.setState({ balance, balanceLoading: false });
     });
   }
 
@@ -81,9 +89,10 @@ class Home extends Component {
   }
 
   addActivity(activity) {
-    const { activities } = this.state;
+    const { activities, balance } = this.state;
     this.setState({
       activities: [activity, ...activities],
+      balance: activity.method.id === 'cash' ? balance - activity.sum : balance,
     });
   }
 
@@ -104,7 +113,10 @@ class Home extends Component {
       labelsLoading,
       activities,
       activitiesLoading,
+      balance,
+      balanceLoading,
     } = this.state;
+    const isLoading = balanceLoading || activitiesLoading;
     return (
       <Page>
         <AppBar
@@ -122,6 +134,7 @@ class Home extends Component {
             labelsLoading={labelsLoading}
             onAddClick={this.onAddClick}
             addActivity={this.addActivity}
+            balance={balance}
           />
         </Drawer>
         <SideMenu
@@ -131,7 +144,9 @@ class Home extends Component {
           onSignOutClick={signOut}
         />
         <Container marginTop>
-          <ActivityList activities={activities} loading={activitiesLoading} />
+          {isLoading || <Summary balance={balance} />}
+          {isLoading || <ActivityList activities={activities} />}
+          {isLoading && <SpinnerTwo />}
         </Container>
       </Page>
     );
