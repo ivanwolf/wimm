@@ -1,10 +1,8 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import Styled from 'styled-components';
-import { ActivityWrapper } from './ActivityList';
-import { Col, Row } from '../../components/Layout';
-import { Card, CardHeader, CardItem, WhiteCard } from '../../components/Card';
-import { formatSum } from '../../utils/format';
+import { Col } from '../../../../components/Layout';
+import { Card, CardHeader, WhiteCard } from '../../../../components/Card';
+import { formatSum } from '../../../../utils/format';
 
 const Summary = ({ balance }) => (
   <Fragment>

@@ -1,9 +1,11 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Col } from '../../components/Layout';
-import { SpinnerTwo } from '../../components/spinner/Spinner';
-import { formatSum } from '../../utils/format';
-import { Card, CardHeader, CardItem, WhiteCard } from '../../components/Card';
+import { Col } from '../../../../components/Layout';
+import { SpinnerTwo } from '../../../../components/spinner/Spinner';
+import { formatSum } from '../../../../utils/format';
+import {
+  Card, CardHeader, CardItem, WhiteCard,
+} from '../../../../components/Card';
 
 
 export const ActivityWrapper = Card.extend`

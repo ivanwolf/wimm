@@ -1,20 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Redirect } from 'react-router-dom';
+import { Redirect, Switch, Route } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { getUserPlaces } from '../utils/maps';
-import { 
+import {
   getUserMethods, getUserLabels, getUserActivity, getUserBalance,
 } from '../utils/firestore';
 import { Page, Container } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
-import ActivityList from './home/ActivityList';
 import SideMenu from './home/Sidemenu';
-import Summary from './home/Summary';
 import Drawer from '../components/Drawer';
 import AppBar from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
-import { SpinnerTwo } from '../components/spinner/Spinner';
+import Activity from './home/pages/Activity';
 
 class Home extends Component {
   constructor(props) {
@@ -143,11 +141,18 @@ class Home extends Component {
           username={username}
           onSignOutClick={signOut}
         />
-        <Container marginTop>
-          {isLoading || <Summary balance={balance} />}
-          {isLoading || <ActivityList activities={activities} />}
-          {isLoading && <SpinnerTwo />}
-        </Container>
+        <Switch>
+          <Route
+            path="/"
+            render={() => (
+              <Activity
+                activities={activities}
+                balance={balance}
+                loading={isLoading}
+              />
+            )}
+          />
+        </Switch>
       </Page>
     );
   }
