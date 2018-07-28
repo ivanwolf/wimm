@@ -5,26 +5,28 @@ class Touchable extends Component {
   constructor(props) {
     super(props);
     this.handleTouchStart = this.handleTouchStart.bind(this);
-    this.handleTouchEnd = this.handleTouchEnd.bind(this);
+    this.clearTimeout = this.clearTimeout.bind(this);
     this.timeout = null;
+  }
+
+  componentDidUpdate(prevProps) {
+    const { disabled } = this.props;
+    if (disabled && disabled !== prevProps.disabled) {
+      this.clearTimeout();
+    }
   }
 
   handleTouchStart() {
     const { disabled, onTouchSelect } = this.props;
-    if (!disabled) {
-      this.timeout = setTimeout(() => {
-        onTouchSelect();
-      }, 800);
-    }
+    this.timeout = setTimeout(() => {
+      onTouchSelect();
+    }, 600);
   }
 
-  handleTouchEnd() {
-    const { disabled } = this.props;
-    if (!disabled) {
-      if (this.timeout) {
-        clearTimeout(this.timeout);
-        this.timeout = null;
-      }
+  clearTimeout() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      this.timeout = null;
     }
   }
 
@@ -33,7 +35,7 @@ class Touchable extends Component {
     return (
       <div
         onTouchStart={this.handleTouchStart}
-        onTouchEnd={this.handleTouchEnd}
+        onTouchEnd={this.clearTimeout}
       >
         {Children.only(children)}
       </div>
