@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import styled, { css } from 'styled-components';
@@ -16,29 +16,50 @@ const AppBarWrapper = styled.div`
   z-index: 1;
   height: 4rem;
   background-color: ${colors.white};
-  transition: box-shadow .5s ease;
+  padding: 0 0.7rem;
+  transition: box-shadow .4s ease;
   ${({ solid }) => solid && css`
     box-shadow: 0px 0px 5px 0px ${colors.violette};
   `}
 `;
 
-const DateWrapper = styled.div`
-  flex: 1;
+const TitleWrapper = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: center;
   font-size: large
+  transition: opacity .4s ease;
+  ${({ hidden }) => hidden && css`
+    opacity: 0;
+
+  `}
 `;
 
-const IconWrapper = styled.div`
+const IconWrapper = styled.div.attrs({
+  onClick: ({ hidden, onClick }) => hidden || onClick,
+})`
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 0 1rem;
-  width: 2rem;
+  position: absolute;
+  transition: opacity .4s ease;
+  z-index: 1;
+  ${({ right }) => right && css`
+    right: .7rem;
+  `}
+  ${({ rightSecond }) => rightSecond && css`
+    right: calc(.7rem + 40px);
+  `}
+  ${({ hidden }) => hidden && css`
+    opacity: 0;
+    z-index: 0;
+  `}
 `;
 
 const RotateIcon = styled(Icon)`
-  transition: transform .5s ease;
+  transition: transform .4s ease;
   ${({ rotate }) => rotate && css`
     transform: rotate(45deg) scale(1.1);
   `}
@@ -47,83 +68,120 @@ const RotateIcon = styled(Icon)`
   `}
 `;
 
-const HiddenIcon = styled(Icon)`
-  transition: opacity .5s ease;
-  ${({ hidden }) => hidden && css`
-    opacity: 0;
-  `}
-`;
 
-const getTitle = (editMode, openForm, pathname) => {
-  if (pathname === '/') {
-    if (editMode) return '';
-    if (openForm) return 'Agregar movimiento';
-    return 'MangoApp';
-  }
-  if (pathname === '/add_founds') return 'Añadir fondos';
-  return '';
+const AppBarHOC = ({
+  renderLeft,
+  renderTitle,
+  renderRight,
+}) => (
+  <ScrollThreshold
+    limit={5}
+    render={overThreshold => (
+      <AppBarWrapper solid={overThreshold}>
+        {renderLeft && renderLeft()}
+        {renderTitle && renderTitle()}
+        {renderRight && renderRight()}
+      </AppBarWrapper>
+    )}
+  />
+);
+
+AppBarHOC.defaultProps = {
+  renderRight: () => {},
 };
 
-const leftAction = (location, editMode, openMenu, goBack, clearEditMode) => {
-  if (location.pathname === '/') {
-    if (editMode) return clearEditMode;
-    return openMenu;
-  }
-  return goBack;
+AppBarHOC.propTypes = {
+  renderLeft: PropTypes.func.isRequired,
+  renderTitle: PropTypes.func.isRequired,
+  renderRight: PropTypes.func,
 };
 
 
-const AppBar = ({
+export const HomeAppBar = ({
   openForm,
-  onAddClick,
-  onMenuClick,
-  location,
-  history,
-  clearSelectedActivities,
   selectedActivitiesCount,
+  toggleOpenForm,
+  toggleOpenMenu,
+  clearSelectedActivities,
+  handleDeleteActivities,
+  handleEditActivity,
 }) => {
   const editMode = selectedActivitiesCount > 0;
-  const hideAdd = location.pathname !== '/';
-  const leftIcon = location.pathname !== '/' || editMode ? 'arrow_back' : 'menu';
-  const rightIcon = editMode ? 'delete' : 'add';
-  const onLeftIconClick = leftAction(
-    location,
-    editMode,
-    onMenuClick,
-    history.goBack,
-    clearSelectedActivities,
-  );
   return (
-    <ScrollThreshold
-      limit={5}
-      render={overThreshold => (
-        <AppBarWrapper solid={overThreshold}>
-          <IconWrapper onClick={onLeftIconClick}>
-            <HiddenIcon hidden={openForm} name={leftIcon} />
+    <AppBarHOC
+      renderLeft={() => (
+        <Fragment>
+          <IconWrapper hidden={openForm || editMode} onClick={toggleOpenMenu}>
+            <Icon name="menu" />
           </IconWrapper>
-          <DateWrapper>
-            {getTitle(editMode, openForm, location.pathname)}
-          </DateWrapper>
-          {editMode && (
-            <IconWrapper onClick={onLeftIconClick}>
-              <HiddenIcon hidden={selectedActivitiesCount > 1} name="edit" />
-            </IconWrapper>
-          )}
-          <IconWrapper onClick={onAddClick}>
-            <RotateIcon hidden={hideAdd} rotate={openForm} name={rightIcon} />
+          <IconWrapper hidden={!editMode} onClick={clearSelectedActivities}>
+            <Icon name="arrow_back" />
           </IconWrapper>
-        </AppBarWrapper>
+        </Fragment>
+      )}
+      renderTitle={() => (
+        <Fragment>
+          <TitleWrapper hidden={editMode || openForm}>
+            MangoApp
+          </TitleWrapper>
+          <TitleWrapper hidden={editMode || !openForm}>
+            Agregar movimiento
+          </TitleWrapper>
+        </Fragment>
+      )}
+      renderRight={() => (
+        <Fragment>
+          <IconWrapper right hidden={editMode} onClick={toggleOpenForm}>
+            <RotateIcon rotate={openForm} name="add" />
+          </IconWrapper>
+          <IconWrapper right hidden={!editMode} onClick={handleDeleteActivities}>
+            <Icon name="delete" />
+          </IconWrapper>
+          <IconWrapper
+            rightSecond
+            hidden={!editMode || selectedActivitiesCount > 1}
+            onClick={handleEditActivity}
+          >
+            <Icon name="edit" />
+          </IconWrapper>
+        </Fragment>
       )}
     />
   );
 };
 
-AppBar.propTypes = {
+HomeAppBar.propTypes = {
   openForm: PropTypes.bool.isRequired,
-  onAddClick: PropTypes.func.isRequired,
-  onMenuClick: PropTypes.func.isRequired,
-  clearSelectedActivities: PropTypes.func.isRequired,
   selectedActivitiesCount: PropTypes.number.isRequired,
+  toggleOpenForm: PropTypes.func.isRequired,
+  toggleOpenMenu: PropTypes.func.isRequired,
+  clearSelectedActivities: PropTypes.func.isRequired,
+  handleDeleteActivities: PropTypes.func.isRequired,
+  handleEditActivity: PropTypes.func.isRequired,
 };
 
-export default withRouter(AppBar);
+
+const LocationAppBar = ({
+  title,
+  history,
+}) => (
+  <AppBarHOC
+    renderLeft={() => (
+      <IconWrapper onClick={history.goBack}>
+        <Icon name="arrow_back" />
+      </IconWrapper>
+    )}
+    renderTitle={() => (
+      <TitleWrapper>
+        {title}
+      </TitleWrapper>
+    )}
+  />
+);
+
+LocationAppBar.propTypes = {
+  title: PropTypes.string.isRequired,
+  history: PropTypes.object.isRequired,
+};
+
+export const AppBar = withRouter(LocationAppBar);

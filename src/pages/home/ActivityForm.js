@@ -36,7 +36,7 @@ class ActivityForm extends Component {
         sum, placeId, methodId, labelId, detail,
       } = this.state;
       const {
-        places, methods, labels, onAddClick, addActivity, balance,
+        places, methods, labels, toggleOpenForm, addActivity, balance,
       } = this.props;
       const createdAt = Date.now();
       const place = places.find(pl => pl.id === placeId);
@@ -76,7 +76,7 @@ class ActivityForm extends Component {
         sumError: '',
       });
       // Close form
-      onAddClick();
+      toggleOpenForm();
     } catch (err) {
       console.log(err);
     }
@@ -176,6 +176,7 @@ ActivityForm.propTypes = {
   placesLoading: PropTypes.bool.isRequired,
   methodsLoading: PropTypes.bool.isRequired,
   labelsLoading: PropTypes.bool.isRequired,
+  toggleOpenForm: PropTypes.func.isRequired,
 };
 
 export default ActivityForm;

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Redirect, Switch, Route } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
@@ -10,7 +10,7 @@ import { Page } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
 import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
-import AppBar from '../components/AppBar';
+import { HomeAppBar, AppBar } from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
 import Activity from './home/pages/Activity';
 import AddFounds from './home/pages/AddFounds';
@@ -33,8 +33,8 @@ class Home extends Component {
       balanceLoading: true,
       selectedActivities: [],
     };
-    this.onMenuClick = this.onMenuClick.bind(this);
-    this.onAddClick = this.onAddClick.bind(this);
+    this.toggleOpenMenu = this.toggleOpenMenu.bind(this);
+    this.toggleOpenForm = this.toggleOpenForm.bind(this);
     this.getPlacesOptions = this.getPlacesOptions.bind(this);
     this.addActivity = this.addActivity.bind(this);
     this.handleSelectActivity = this.handleSelectActivity.bind(this);
@@ -57,22 +57,6 @@ class Home extends Component {
     });
   }
 
-  onMenuClick() {
-    this.setState(state => ({
-      openMenu: !state.openMenu,
-    }));
-  }
-
-  onAddClick() {
-    const { openForm } = this.state;
-    if (!openForm) {
-      this.getPlacesOptions();
-      this.setState({ openForm: true });
-    } else {
-      this.setState({ openForm: false });
-    }
-  }
-
   getPlacesOptions() {
     const { location, handleLocationChange } = this.props;
     const { places } = this.state;
@@ -88,6 +72,23 @@ class Home extends Component {
       .catch(() => {
         this.setState({ placesLoading: false });
       });
+  }
+
+  toggleOpenForm() {
+    const { openForm } = this.state;
+    if (!openForm) {
+      this.getPlacesOptions();
+      this.setState({ openForm: true });
+    } else {
+      this.setState({ openForm: false });
+    }
+  }
+
+  toggleOpenMenu() {
+    console.log('Hola');
+    this.setState(state => ({
+      openMenu: !state.openMenu,
+    }));
   }
 
   addActivity(activity) {
@@ -138,13 +139,6 @@ class Home extends Component {
     const isLoading = balanceLoading || activitiesLoading;
     return (
       <Page>
-        <AppBar
-          selectedActivitiesCount={selectedActivities.length}
-          openForm={openForm}
-          onAddClick={this.onAddClick}
-          onMenuClick={this.onMenuClick}
-          clearSelectedActivities={this.clearSelectedActivities}
-        />
         <Drawer active={openForm}>
           <ActivityForm
             places={places}
@@ -153,14 +147,14 @@ class Home extends Component {
             methodsLoading={methodsLoading}
             labels={labels}
             labelsLoading={labelsLoading}
-            onAddClick={this.onAddClick}
+            toggleOpenForm={this.toggleOpenForm}
             addActivity={this.addActivity}
             balance={balance}
           />
         </Drawer>
         <SideMenu
           active={openMenu}
-          onOverlayClick={this.onMenuClick}
+          onOverlayClick={this.toggleOpenMenu}
           username={username}
           onSignOutClick={signOut}
         />
@@ -168,22 +162,34 @@ class Home extends Component {
           <Route
             path="/add_founds"
             render={() => (
-              <AddFounds
-                methods={methods}
-                methodsLoading={methodsLoading}
-              />
+              <Fragment>
+                <AppBar title="Añadir fondos" />
+                <AddFounds
+                  methods={methods}
+                  methodsLoading={methodsLoading}
+                />
+              </Fragment>
             )}
           />
           <Route
             path="/"
             render={() => (
-              <Activity
-                handleSelectActivity={this.handleSelectActivity}
-                selectedActivities={selectedActivities}
-                activities={activities}
-                balance={balance}
-                loading={isLoading}
-              />
+              <Fragment>
+                <HomeAppBar
+                  openForm={openForm}
+                  selectedActivitiesCount={selectedActivities.length}
+                  toggleOpenForm={this.toggleOpenForm}
+                  toggleOpenMenu={this.toggleOpenMenu}
+                  clearSelectedActivities={this.clearSelectedActivities}
+                />
+                <Activity
+                  handleSelectActivity={this.handleSelectActivity}
+                  selectedActivities={selectedActivities}
+                  activities={activities}
+                  balance={balance}
+                  loading={isLoading}
+                />
+              </Fragment>
             )}
           />
         </Switch>
