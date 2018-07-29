@@ -4,8 +4,9 @@ import { Redirect, Switch, Route } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { getUserPlaces } from '../utils/maps';
 import {
-  getAccounts, getActivities, getCategories,
+  getAccounts, getActivities, getCategories, deleteActivites,
 } from '../utils/firestore';
+import { accountsToUpdate, categoriesToUpdate } from '../utils/lambda';
 import { Page } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
 import SideMenu from './home/Sidemenu';
@@ -37,6 +38,7 @@ class Home extends Component {
     this.updateUI = this.updateUI.bind(this);
     this.handleSelectActivity = this.handleSelectActivity.bind(this);
     this.clearSelectedActivities = this.clearSelectedActivities.bind(this);
+    this.handleDeleteActivities = this.handleDeleteActivities.bind(this);
   }
 
   componentDidMount() {
@@ -91,7 +93,7 @@ class Home extends Component {
       activities: [activity, ...activities],
       accounts: accounts.map((acc) => {
         if (acc.id === accountId) {
-          return Object.assign(acc, { balance: accountBalance });
+          return Object.assign({}, acc, { balance: accountBalance });
         }
         return acc;
       }),
@@ -113,6 +115,32 @@ class Home extends Component {
       this.setState({
         selectedActivities: [id, ...selectedActivities],
       });
+    }
+  }
+
+  async handleDeleteActivities() {
+    const {
+      selectedActivities, activities, accounts, categories,
+    } = this.state;
+    const user = getCurrentUser();
+    const activitiesToDelete = activities.filter(act => selectedActivities.includes(act.id));
+    const updatedAccounts = accountsToUpdate(activitiesToDelete, accounts);
+    const updatedCategories = categoriesToUpdate(activitiesToDelete, categories);
+    try {
+      await deleteActivites(user, activitiesToDelete, updatedAccounts, updatedCategories);
+      this.setState({
+        selectedActivities: [],
+        activities: activities.filter(act => !selectedActivities.includes(act.id)),
+        accounts: accounts.map((acc) => {
+          const newAccountData = updatedAccounts.find(uAcc => uAcc.id === acc.id);
+          if (newAccountData) {
+            return Object.assign({}, acc, newAccountData);
+          }
+          return acc;
+        }),
+      });
+    } catch (err) {
+      console.log(err);
     }
   }
 
@@ -178,6 +206,7 @@ class Home extends Component {
                   toggleOpenForm={this.toggleOpenForm}
                   toggleOpenMenu={this.toggleOpenMenu}
                   clearSelectedActivities={this.clearSelectedActivities}
+                  handleDeleteActivities={this.handleDeleteActivities}
                 />
                 <Activity
                   handleSelectActivity={this.handleSelectActivity}

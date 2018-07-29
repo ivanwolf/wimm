@@ -1,6 +1,6 @@
 import colors from './colors';
 
-export const accounts = [
+export const initialAccounts = [
   {
     name: 'Efectivo',
     activityCount: 0,
@@ -20,7 +20,7 @@ export const accounts = [
   },
 ];
 
-export const categories = [
+export const initialCategories = [
   {
     name: 'Comida',
     color: colors.blueLight,

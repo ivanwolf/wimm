@@ -65,10 +65,8 @@ class ActivityForm extends Component {
 
       const accountData = {
         activityCount: account.activityCount + 1,
+        balance: account.balance - activity.sum,
       };
-      if (account.hasBalance) {
-        accountData.balance = account.balance - activity.sum;
-      }
 
       const categoryData = {
         activityCount: category.activityCount + 1,

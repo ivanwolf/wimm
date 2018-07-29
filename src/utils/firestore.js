@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import { accounts, categories } from '../config/initialSetup';
+import { initialAccounts, initialCategories } from '../config/initialSetup';
 
 const firestore = firebase.firestore();
 const settings = { timestampsInSnapshots: true };
@@ -10,10 +10,10 @@ const getStore = () => firestore;
 export const getUserDoc = user => getStore().collection('users').doc(user.uid);
 
 export const createInitialDocument = (user) => {
-  accounts.forEach(async (account) => {
+  initialAccounts.forEach(async (account) => {
     await getUserDoc(user).collection('accounts').add(account);
   });
-  categories.forEach(async (category) => {
+  initialCategories.forEach(async (category) => {
     await getUserDoc(user).collection('categories').add(category);
   });
   return getUserDoc(user).set({
@@ -78,3 +78,21 @@ export const updatePlace = (user, placeId, data) => (
 export const deleteActivity = (user, activityId) => (
   getUserDoc(user).collection('activities').doc(activityId).delete()
 );
+
+
+export const deleteActivites = (
+  user,
+  activitiesToDelete,
+  updatedAccounts,
+  updatedCategories,
+) => {
+  updatedCategories.forEach(async ({ id, ...data }) => {
+    await updateCategory(user, id, data);
+  });
+  updatedAccounts.forEach(async ({ id, ...data }) => {
+    await updateAccount(user, id, data);
+  });
+  activitiesToDelete.forEach(async (act) => {
+    await deleteActivity(user, act.id);
+  });
+};
