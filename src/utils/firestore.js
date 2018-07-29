@@ -1,5 +1,5 @@
 import firebase from 'firebase';
-import { payMethods, labels } from '../config/initialSetup';
+import { accounts, categories } from '../config/initialSetup';
 
 const firestore = firebase.firestore();
 const settings = { timestampsInSnapshots: true };
@@ -9,22 +9,12 @@ const getStore = () => firestore;
 
 export const getUserDoc = user => getStore().collection('users').doc(user.uid);
 
-export const getUserBalance = user => getUserDoc(user).get().then((doc) => {
-  return doc.data().balance;
-});
-
 export const createInitialDocument = (user) => {
-  payMethods.forEach(async (method) => {
-    await getUserDoc(user).collection('methods').doc(method.id).set({
-      name: method.name,
-      balance: 0,
-    });
+  accounts.forEach(async (account) => {
+    await getUserDoc(user).collection('accounts').add(account);
   });
-  labels.forEach(async (label) => {
-    await getUserDoc(user).collection('labels').doc(label.id).set({
-      name: label.name,
-      color: label.color,
-    });
+  categories.forEach(async (category) => {
+    await getUserDoc(user).collection('categories').add(category);
   });
   return getUserDoc(user).set({
     name: user.displayName,
@@ -43,24 +33,23 @@ const toArray = (query) => {
   return docs;
 };
 
-export const getUserMethods = user => getUserDoc(user).collection('methods').get().then(toArray);
+/* GETS */
 
-export const getUserLabels = user => getUserDoc(user).collection('labels').get().then(toArray);
+export const getAccounts = user => getUserDoc(user).collection('accounts').get().then(toArray);
 
+export const getCategories = user => getUserDoc(user).collection('categories').get().then(toArray);
 
-export const getUserActivity = (user) => {
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  return getUserDoc(user)
+export const getActivities = user => (
+  getUserDoc(user)
     .collection('activities')
     .get()
-    // .where('createdAt', '>', today.getTime())
-    // .orderBy('createdAt', 'desc')
-    .then(toArray);
-};
+    .then(toArray)
+);
+
+/* CREATES */
 
 export const createActivity = (user, data) => (
-  getUserDoc(user).collection('activities').doc().set(data)
+  getUserDoc(user).collection('activities').add(data).then(doc => doc.id)
 );
 
 export const createPlace = (user, place) => (
@@ -70,18 +59,22 @@ export const createPlace = (user, place) => (
   })
 );
 
-export const updateLabel = (user, labelId, today) => (
-  getUserDoc(user).collection('labels').doc(labelId).update({
-    [today]: true,
-  })
+/* UPDATES */
+
+export const updateAccount = (user, accountId, data) => (
+  getUserDoc(user).collection('accounts').doc(accountId).update(data)
 );
 
-export const updatePlace = (user, placeId, today) => (
-  getUserDoc(user).collection('places').doc(placeId).update({
-    [today]: true,
-  })
+export const updateCategory = (user, categoryId, data) => (
+  getUserDoc(user).collection('categories').doc(categoryId).update(data)
 );
 
-export const updateBalance = (user, balance) => (
-  getUserDoc(user).update({ balance })
+export const updatePlace = (user, placeId, data) => (
+  getUserDoc(user).collection('places').doc(placeId).update(data)
+);
+
+/* DELETES */
+
+export const deleteActivity = (user, activityId) => (
+  getUserDoc(user).collection('activities').doc(activityId).delete()
 );

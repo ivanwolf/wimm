@@ -4,7 +4,7 @@ import { Redirect, Switch, Route } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { getUserPlaces } from '../utils/maps';
 import {
-  getUserMethods, getUserLabels, getUserActivity, getUserBalance,
+  getAccounts, getActivities, getCategories,
 } from '../utils/firestore';
 import { Page } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
@@ -23,37 +23,32 @@ class Home extends Component {
       openForm: false,
       places: [],
       placesLoading: false,
-      methods: [],
-      methodsLoading: true,
-      labels: [],
-      labelsLoading: true,
+      accounts: [],
+      accountsLoading: true,
+      categories: [],
+      categoriesLoading: true,
       activities: [],
       activitiesLoading: true,
-      balance: 0,
-      balanceLoading: true,
       selectedActivities: [],
     };
     this.toggleOpenMenu = this.toggleOpenMenu.bind(this);
     this.toggleOpenForm = this.toggleOpenForm.bind(this);
     this.getPlacesOptions = this.getPlacesOptions.bind(this);
-    this.addActivity = this.addActivity.bind(this);
+    this.updateUI = this.updateUI.bind(this);
     this.handleSelectActivity = this.handleSelectActivity.bind(this);
     this.clearSelectedActivities = this.clearSelectedActivities.bind(this);
   }
 
   componentDidMount() {
     const user = getCurrentUser();
-    getUserMethods(user).then((methods) => {
-      this.setState({ methods, methodsLoading: false });
+    getAccounts(user).then((accounts) => {
+      this.setState({ accounts, accountsLoading: false });
     });
-    getUserLabels(user).then((labels) => {
-      this.setState({ labels, labelsLoading: false });
+    getCategories(user).then((categories) => {
+      this.setState({ categories, categoriesLoading: false });
     });
-    getUserActivity(user).then((activities) => {
+    getActivities(user).then((activities) => {
       this.setState({ activities, activitiesLoading: false });
-    });
-    getUserBalance(user).then((balance) => {
-      this.setState({ balance, balanceLoading: false });
     });
   }
 
@@ -85,17 +80,22 @@ class Home extends Component {
   }
 
   toggleOpenMenu() {
-    console.log('Hola');
     this.setState(state => ({
       openMenu: !state.openMenu,
     }));
   }
 
-  addActivity(activity) {
-    const { activities, balance } = this.state;
+  updateUI(activity, accountId, accountBalance) {
+    const { activities, accounts } = this.state;
     this.setState({
       activities: [activity, ...activities],
-      balance: activity.method.id === 'cash' ? balance - activity.sum : balance,
+      accounts: accounts.map((acc) => {
+        if (acc.id === accountId) {
+          return Object.assign(acc, { balance: accountBalance });
+        }
+        return acc;
+      }),
+      openForm: false,
     });
   }
 
@@ -126,30 +126,27 @@ class Home extends Component {
       openMenu,
       placesLoading,
       places,
-      methods,
-      methodsLoading,
-      labels,
-      labelsLoading,
+      accounts,
+      accountsLoading,
+      categories,
+      categoriesLoading,
       activities,
       activitiesLoading,
-      balance,
-      balanceLoading,
       selectedActivities,
     } = this.state;
-    const isLoading = balanceLoading || activitiesLoading;
+    const isLoading = accountsLoading || activitiesLoading;
     return (
       <Page>
         <Drawer active={openForm}>
           <ActivityForm
             places={places}
             placesLoading={placesLoading}
-            methods={methods}
-            methodsLoading={methodsLoading}
-            labels={labels}
-            labelsLoading={labelsLoading}
+            accounts={accounts}
+            accountsLoading={accountsLoading}
+            categories={categories}
+            categoriesLoading={categoriesLoading}
             toggleOpenForm={this.toggleOpenForm}
-            addActivity={this.addActivity}
-            balance={balance}
+            updateUI={this.updateUI}
           />
         </Drawer>
         <SideMenu
@@ -165,8 +162,8 @@ class Home extends Component {
               <Fragment>
                 <AppBar title="Añadir fondos" />
                 <AddFounds
-                  methods={methods}
-                  methodsLoading={methodsLoading}
+                  accounts={accounts}
+                  accountsLoading={accountsLoading}
                 />
               </Fragment>
             )}
@@ -186,7 +183,7 @@ class Home extends Component {
                   handleSelectActivity={this.handleSelectActivity}
                   selectedActivities={selectedActivities}
                   activities={activities}
-                  balance={balance}
+                  accounts={accounts}
                   loading={isLoading}
                 />
               </Fragment>

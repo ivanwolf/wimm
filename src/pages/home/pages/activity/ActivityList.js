@@ -31,13 +31,13 @@ const ActivityCard = ({ activity, onClick, selected, editMode }) => {
   return (
     <ActivityWrapper
       selected={selected}
-      color={activity.label.color}
+      color={activity.category.color}
       onClick={onClick}
       editMode={editMode}
     >
       <Col>
-        <CardHeader color={activity.label.color}>
-          {`${activity.label.name}`}
+        <CardHeader color={activity.category.color}>
+          {`${activity.category.name}`}
         </CardHeader>
         <CardItem>
           {`${date}`}
@@ -50,11 +50,11 @@ const ActivityCard = ({ activity, onClick, selected, editMode }) => {
         </CardItem>
       </Col>
       <Col>
-        <CardHeader color={activity.label.color}>
+        <CardHeader color={activity.category.color}>
           {`$${formatSum(activity.sum)}`}
         </CardHeader>
         <CardItem>
-          {activity.method.name}
+          {activity.account.name}
         </CardItem>
       </Col>
     </ActivityWrapper>

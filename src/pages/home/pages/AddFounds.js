@@ -17,7 +17,7 @@ class AddFound extends Component {
     super(props);
     this.state = {
       mount: '',
-      methodId: '',
+      accountId: '',
       mountError: '',
       loading: false,
     };
@@ -30,8 +30,8 @@ class AddFound extends Component {
     this.setState({ mount: ev.target.value });
   }
 
-  handleMethodChange(methodId) {
-    this.setState({ methodId });
+  handleMethodChange(accountId) {
+    this.setState({ accountId });
   }
 
   handleSubmit(ev) {
@@ -40,8 +40,10 @@ class AddFound extends Component {
   }
 
   render() {
-    const { mount, mountError, methodId, loading } = this.state;
-    const { methods, methodsLoading } = this.props;
+    const {
+      mount, mountError, accountId, loading,
+    } = this.state;
+    const { accounts, accountsLoading } = this.props;
     return (
       <Container marginTop>
         <WhiteCard>
@@ -49,11 +51,11 @@ class AddFound extends Component {
         </WhiteCard>
         <Form onSubmit={this.handleSubmit}>
           <Dropdown
-            options={methods}
-            value={methodId}
+            options={accounts}
+            value={accountId}
             onSelect={this.handleMethodChange}
-            placeholder="Método de pago"
-            loading={methodsLoading}
+            placeholder="Cuenta"
+            loading={accountsLoading}
           />
           <TextInput
             type="number"

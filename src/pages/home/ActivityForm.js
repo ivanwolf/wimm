@@ -5,7 +5,7 @@ import { TextInput, Button } from '../../components/Input';
 import { Dropdown, LocationDropdown } from '../../components/Dropdown';
 import { getCurrentUser } from '../../utils/session';
 import {
-  createActivity, createPlace, updateBalance,
+  createActivity, createPlace, updateAccount, updateCategory,
 } from '../../utils/firestore';
 
 class ActivityForm extends Component {
@@ -13,8 +13,8 @@ class ActivityForm extends Component {
     super(props);
     this.state = {
       sum: '',
-      methodId: '',
-      labelId: '',
+      accountId: '',
+      categoryId: '',
       detail: '',
       placeId: '',
       sumError: '',
@@ -33,52 +33,86 @@ class ActivityForm extends Component {
     await this.setState({ loading: true });
     try {
       const {
-        sum, placeId, methodId, labelId, detail,
+        sum, placeId, accountId, categoryId, detail,
       } = this.state;
       const {
-        places, methods, labels, toggleOpenForm, addActivity, balance,
+        places, accounts, categories, toggleOpenForm, updateUI,
       } = this.props;
-      const createdAt = Date.now();
+
       const place = places.find(pl => pl.id === placeId);
-      const method = methods.find(me => me.id === methodId);
-      const label = labels.find(la => la.id === labelId);
-      const user = getCurrentUser();
+      const account = accounts.find(me => me.id === accountId);
+      const category = categories.find(la => la.id === categoryId);
+
       const activity = {
-        createdAt,
+        createdAt: Date.now(),
         sum: parseInt(sum, 10),
-        method,
-        label,
+        type: 'expense',
+        account: {
+          id: accountId,
+          name: account.name,
+        },
+        category: {
+          id: categoryId,
+          name: category.name,
+          color: category.color,
+        },
+        place: {
+          id: placeId,
+          name: place.name,
+        },
         detail,
-        place,
       };
-      await createActivity(user, activity);
-      // Add activity to local state;
-      addActivity(activity);
-      // update firestore
+
+      const accountData = {
+        activityCount: account.activityCount + 1,
+      };
+      if (account.hasBalance) {
+        accountData.balance = account.balance - activity.sum;
+      }
+
+      const categoryData = {
+        activityCount: category.activityCount + 1,
+        total: category.total + activity.sum,
+      };
+
+      // Create activity in firestore
+      const user = getCurrentUser();
+      const activityId = await createActivity(user, activity);
+
+      // Update UI optimiscally
+      updateUI(
+        Object.assign({}, activity, { id: activityId }),
+        accountId,
+        accountData.balance,
+      );
+
+      // update rest of firestore
       await createPlace(user, {
         id: placeId,
         name: place.name,
         address: place.address,
       });
-      if (methodId === 'cash') {
-        await updateBalance(user, balance - activity.sum);
-      }
-      // await updateLabel(user, labelId, today);
-      // await updatePlace(user, placeId, today);
+      await updateAccount(user, accountId, accountData);
+      await updateCategory(user, categoryId, categoryData);
+
       // Clear state
       await this.setState({
         loading: false,
         sum: '',
-        methodId: '',
-        labelId: '',
+        accountId: '',
+        categoryId: '',
         detail: '',
         placeId: '',
         sumError: '',
       });
+
       // Close form
-      toggleOpenForm();
+      // toggleOpenForm();
+
+      
     } catch (err) {
       console.log(err);
+      this.setState({ loading: false });
     }
   }
 
@@ -86,12 +120,12 @@ class ActivityForm extends Component {
     this.setState({ sum: ev.target.value });
   }
 
-  handleMethodChange(methodId) {
-    this.setState({ methodId });
+  handleMethodChange(accountId) {
+    this.setState({ accountId });
   }
 
-  handleLabelChange(labelId) {
-    this.setState({ labelId });
+  handleLabelChange(categoryId) {
+    this.setState({ categoryId });
   }
 
   hanldeDetailChange(ev) {
@@ -104,15 +138,15 @@ class ActivityForm extends Component {
 
   render() {
     const {
-      sum, sumError, methodId, labelId, detail, placeId, loading,
+      sum, sumError, accountId, categoryId, detail, placeId, loading,
     } = this.state;
     const {
       places,
       placesLoading,
-      methods,
-      methodsLoading,
-      labels,
-      labelsLoading,
+      accounts,
+      accountsLoading,
+      categories,
+      categoriesLoading,
     } = this.props;
     return (
       <form onSubmit={this.handleSubmit}>
@@ -132,18 +166,18 @@ class ActivityForm extends Component {
             loading={placesLoading}
           />
           <Dropdown
-            options={methods}
-            value={methodId}
+            options={accounts}
+            value={accountId}
             onSelect={this.handleMethodChange}
-            placeholder="Método de pago"
-            loading={methodsLoading}
+            placeholder="Cuenta"
+            loading={accountsLoading}
           />
           <Dropdown
-            options={labels}
-            value={labelId}
+            options={categories}
+            value={categoryId}
             onSelect={this.handleLabelChange}
-            placeholder="Etiqueta"
-            loading={labelsLoading}
+            placeholder="Categoría"
+            loading={categoriesLoading}
           />
           <TextInput
             type="text"
@@ -171,11 +205,11 @@ const optionsTypes = PropTypes.arrayOf(PropTypes.shape({
 
 ActivityForm.propTypes = {
   places: optionsTypes.isRequired,
-  methods: optionsTypes.isRequired,
-  labels: optionsTypes.isRequired,
+  accounts: optionsTypes.isRequired,
+  categories: optionsTypes.isRequired,
   placesLoading: PropTypes.bool.isRequired,
-  methodsLoading: PropTypes.bool.isRequired,
-  labelsLoading: PropTypes.bool.isRequired,
+  accountsLoading: PropTypes.bool.isRequired,
+  categoriesLoading: PropTypes.bool.isRequired,
   toggleOpenForm: PropTypes.func.isRequired,
 };
 

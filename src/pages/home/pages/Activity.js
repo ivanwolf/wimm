@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Summary from './activity/Summary';
 import ActivityList from './activity/ActivityList';
@@ -7,7 +7,7 @@ import { SpinnerTwo } from '../../../components/spinner/Spinner';
 
 const Activity = ({
   activities,
-  balance,
+  accounts,
   loading,
   selectedActivities,
   handleSelectActivity,
@@ -21,7 +21,7 @@ const Activity = ({
   }
   return (
     <Container marginTop>
-      <Summary balance={balance} />
+      <Summary accounts={accounts} />
       <ActivityList
         activities={activities}
         selectedActivities={selectedActivities}
@@ -35,7 +35,7 @@ Activity.propTypes = {
   handleSelectActivity: PropTypes.func.isRequired,
   activities: PropTypes.array.isRequired,
   selectedActivities: PropTypes.arrayOf(PropTypes.string).isRequired,
-  balance: PropTypes.number.isRequired,
+  accounts: PropTypes.array.isRequired,
   loading: PropTypes.bool.isRequired,
 };
 

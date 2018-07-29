@@ -1,31 +1,35 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import { Col } from '../../../../components/Layout';
 import { Card, CardHeader, WhiteCard } from '../../../../components/Card';
 import { formatSum } from '../../../../utils/format';
 
-const Summary = ({ balance }) => (
+const Summary = ({ accounts }) => (
   <div>
     <WhiteCard>
-      Resumen de saldo
+      Balance
     </WhiteCard>
     <Card>
       <Col>
-        <CardHeader>
-          Efectivo
-        </CardHeader>
+        {accounts.map(acc => acc.hasBalance && (
+          <CardHeader key={acc.id}>
+            {acc.name}
+          </CardHeader>
+        ))}
       </Col>
       <Col>
-        <CardHeader>
-          {`$${formatSum(balance)}`}
-        </CardHeader>
+        {accounts.map(acc => acc.hasBalance && (
+          <CardHeader key={acc.id}>
+            {`$${formatSum(acc.balance)}`}
+          </CardHeader>
+        ))}
       </Col>
     </Card>
   </div>
 );
 
 Summary.propTypes = {
-  balance: PropTypes.number.isRequired,
+  accounts: PropTypes.array.isRequired,
 };
 
 export default Summary;
