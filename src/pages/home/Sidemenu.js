@@ -25,7 +25,7 @@ const SideMenuWrapper = styled.div`
 `;
 
 const Overlay = styled.div`
-  position: absolute;
+  position: fixed;
   background-color: ${colors.gray};
   top: 0;
   right: 0;

@@ -4,6 +4,7 @@ import { withRouter } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import Icon from './Icon';
 import colors from '../config/colors';
+import ScrollThreshold from './utils/ScrollThreshold';
 
 const AppBarWrapper = styled.div`
   display: flex;
@@ -14,6 +15,11 @@ const AppBarWrapper = styled.div`
   align-items: center;
   z-index: 1;
   height: 4rem;
+  background-color: ${colors.white};
+  transition: box-shadow .5s ease;
+  ${({ solid }) => solid && css`
+    box-shadow: 0px 0px 5px 0px ${colors.violette};
+  `}
 `;
 
 const DateWrapper = styled.div`
@@ -88,22 +94,27 @@ const AppBar = ({
     clearSelectedActivities,
   );
   return (
-    <AppBarWrapper>
-      <IconWrapper onClick={onLeftIconClick}>
-        <HiddenIcon hidden={openForm} name={leftIcon} />
-      </IconWrapper>
-      <DateWrapper>
-        {getTitle(editMode, openForm, location.pathname)}
-      </DateWrapper>
-      {editMode && (
-        <IconWrapper onClick={onLeftIconClick}>
-          <HiddenIcon hidden={selectedActivitiesCount > 1} name="edit" />
-        </IconWrapper>
+    <ScrollThreshold
+      limit={5}
+      render={overThreshold => (
+        <AppBarWrapper solid={overThreshold}>
+          <IconWrapper onClick={onLeftIconClick}>
+            <HiddenIcon hidden={openForm} name={leftIcon} />
+          </IconWrapper>
+          <DateWrapper>
+            {getTitle(editMode, openForm, location.pathname)}
+          </DateWrapper>
+          {editMode && (
+            <IconWrapper onClick={onLeftIconClick}>
+              <HiddenIcon hidden={selectedActivitiesCount > 1} name="edit" />
+            </IconWrapper>
+          )}
+          <IconWrapper onClick={onAddClick}>
+            <RotateIcon hidden={hideAdd} rotate={openForm} name={rightIcon} />
+          </IconWrapper>
+        </AppBarWrapper>
       )}
-      <IconWrapper onClick={onAddClick}>
-        <RotateIcon hidden={hideAdd} rotate={openForm} name={rightIcon} />
-      </IconWrapper>
-    </AppBarWrapper>
+    />
   );
 };
 
@@ -111,6 +122,8 @@ AppBar.propTypes = {
   openForm: PropTypes.bool.isRequired,
   onAddClick: PropTypes.func.isRequired,
   onMenuClick: PropTypes.func.isRequired,
+  clearSelectedActivities: PropTypes.func.isRequired,
+  selectedActivitiesCount: PropTypes.number.isRequired,
 };
 
 export default withRouter(AppBar);

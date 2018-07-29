@@ -5,14 +5,14 @@ import { Card, CardHeader, WhiteCard } from '../../../../components/Card';
 import { formatSum } from '../../../../utils/format';
 
 const Summary = ({ balance }) => (
-  <Fragment>
+  <div>
     <WhiteCard>
-      Resumen
+      Resumen de saldo
     </WhiteCard>
     <Card>
       <Col>
         <CardHeader>
-          Saldo
+          Efectivo
         </CardHeader>
       </Col>
       <Col>
@@ -21,7 +21,7 @@ const Summary = ({ balance }) => (
         </CardHeader>
       </Col>
     </Card>
-  </Fragment>
+  </div>
 );
 
 Summary.propTypes = {

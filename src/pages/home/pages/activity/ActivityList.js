@@ -74,9 +74,11 @@ const ActivityList = ({
   const selectActivity = id => () => handleSelectActivity(id);
   return (
     <Fragment>
-      <WhiteCard>
-        Movimientos
-      </WhiteCard>
+      <div>
+        <WhiteCard>
+          Movimientos
+        </WhiteCard>
+      </div>
       <ScrollState
         render={isScrolling => (
           activities.map(act => (

@@ -9,7 +9,7 @@ class ScrollState extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', async () => {
+    window.addEventListener('scroll', () => {
       const { isScrolling } = this.state;
       if (!isScrolling) {
         this.setState({ isScrolling: true });
