@@ -62,14 +62,29 @@ const Footer = styled.div`
 
 const StyledLink = styled.a`
   display: flex;
-  align-items: center;
+  justify-content: center;
   height 2.5rem;
   padding: 0 .5rem;
   border-radius: 3px;
+  flex-direction: column;
+  margin-bottom: 0.7rem;
+  & > div {
+    font-size: 12px;
+    color: ${colors.gray};
+  }
+  ${({ disabled }) => disabled && css`
+    color: ${colors.grayLight};
+    & > div {
+      color: ${colors.grayLight}
+    }
+  `}
   ${({ selected }) => selected && css`
     font-weight: 500;
     background-color: ${colors.violette};
     color: ${colors.white};
+    & > div {
+      color: ${colors.white}
+    }
   `}
 `;
 
@@ -81,19 +96,27 @@ const SignOutButton = CleanButton.extend`
 const FunctionContext = React.createContext(() => {});
 
 const InnerLink = ({
-  history, to, location, children,
+  history, to, location, children, message, disabled
 }) => (
   <FunctionContext.Consumer>
     {closeMenu => (
-      <StyledLink
-        onClick={() => {
-          history.push(to);
-          closeMenu();
-        }}
-        selected={location.pathname === to}
-      >
-        {children}
-      </StyledLink>
+      <Fragment>
+        <StyledLink
+          onClick={() => {
+            if (!disabled) {
+              history.push(to);
+              closeMenu();
+            }
+          }}
+          disabled={disabled}
+          selected={location.pathname === to}
+        >
+          {children}
+          <div>
+            {message}
+          </div>
+        </StyledLink>
+      </Fragment>
     )}
   </FunctionContext.Consumer>
 );
@@ -111,13 +134,19 @@ const SideMenu = ({
       </Avatar>
       <FunctionContext.Provider value={onOverlayClick}>
         <Container verticalPadding>
-          <Link to="/">
+          <Link to="/" message="Balance e historial de actividades">
             Movimientos
           </Link>
-          <Link to="/add_founds">
+          <Link to="/add_founds" message="Registra tus ingresos">
             Añadir fondos
           </Link>
-          <Link to="/settings">
+          <Link to="/transfer" message="Traspasa fondos de una cuenta a otra">
+            Transferir entre cuentas
+          </Link>
+          <Link to="/stats" disabled message="Resumen por día, semana y mes">
+            Estadísticas
+          </Link>
+          <Link to="/settings" disabled message="Agrega o elimina tus categorías y cuentas">
             Configuración
           </Link>
         </Container>

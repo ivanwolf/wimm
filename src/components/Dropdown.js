@@ -35,10 +35,10 @@ const MenuWrapper = styled.div`
   border-left: 2px solid ${colors.violetteDark};
   border-right: 2px solid ${colors.violetteDark};
   max-height: 0;
-  ${({ active }) => active && css`
+  ${({ active, optionsCount }) => active && css`
     border-color: ${colors.violetteDark};
     border-bottom: 2px solid;
-    max-height: 9.5rem;
+    max-height: ${optionsCount < 3 ? `calc(.5rem + ${optionsCount * 3}rem)` : '9.5rem'};
   `}
 `;
 
@@ -123,7 +123,7 @@ class DropdownHOC extends Component {
         <IconWrapper loading={loading} onClick={this.toggleOpenMenu}>
           {loading ? <SpinnerTwo /> : renderIcon(isOpen)}
         </IconWrapper>
-        <MenuWrapper active={isOpen}>
+        <MenuWrapper active={isOpen} optionsCount={options.length}>
           {options.map(opt => (
             <MenuItem
               key={opt.id}

@@ -21,14 +21,16 @@ class AddFound extends Component {
     super(props);
     this.state = {
       sum: '',
-      accountId: '',
+      fromId: '',
+      toId: '',
       sumError: '',
       detail: '',
       loading: false,
     };
-    this.handleSumChange = this.handleSumChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleMethodChange = this.handleMethodChange.bind(this);
+    this.handleSumChange = this.handleSumChange.bind(this);
+    this.handleFromChange = this.handleFromChange.bind(this);
+    this.handleToChange = this.handleToChange.bind(this);
     this.hanldeDetailChange = this.hanldeDetailChange.bind(this);
   }
 
@@ -40,8 +42,16 @@ class AddFound extends Component {
     this.setState({ detail: ev.target.value });
   }
 
-  handleMethodChange(accountId) {
-    this.setState({ accountId });
+  handleFromChange(fromId) {
+    const { toId } = this.state;
+    this.setState({
+      fromId,
+      toId: fromId === toId ? '' : toId,
+    });
+  }
+
+  handleToChange(toId) {
+    this.setState({ toId });
   }
 
   async handleSubmit(ev) {
@@ -49,23 +59,36 @@ class AddFound extends Component {
     const { accounts, updateUI, history } = this.props;
     await this.setState({ loading: true });
     try {
-      const { sum, accountId, detail } = this.state;
-      const account = accounts.find(me => me.id === accountId);
+      const {
+        sum, fromId, toId, detail,
+      } = this.state;
+
+      const fromAccount = accounts.find(acc => acc.id === fromId);
+      const toAccount = accounts.find(acc => acc.id === toId);
 
       const activity = {
         createdAt: Date.now(),
         sum: parseInt(sum, 10),
-        type: 'income',
-        account: {
-          id: accountId,
-          name: account.name,
+        type: 'transfer',
+        from: {
+          id: fromId,
+          name: fromAccount.name,
+        },
+        to: {
+          id: toId,
+          name: toAccount.name,
         },
         detail,
       };
 
-      const accountData = {
-        activityCount: account.activityCount + 1,
-        balance: account.balance + activity.sum,
+      const fromData = {
+        activityCount: fromAccount.activityCount + 1,
+        balance: fromAccount.balance - activity.sum,
+      };
+
+      const toData = {
+        activityCount: toAccount.activityCount + 1,
+        balance: toAccount.balance + activity.sum,
       };
 
       const user = getCurrentUser();
@@ -74,10 +97,12 @@ class AddFound extends Component {
       updateUI(
         Object.assign({}, activity, { id: activityId }),
         [
-          Object.assign({}, accountData, { id: accountId }),
+          Object.assign({}, fromData, { id: fromId }),
+          Object.assign({}, toData, { id: toId }),
         ],
       );
-      await updateAccount(user, accountId, accountData);
+      await updateAccount(user, fromId, fromData);
+      await updateAccount(user, toId, toData);
       history.push('/');
     } catch (err) {
       console.log(err);
@@ -87,20 +112,27 @@ class AddFound extends Component {
 
   render() {
     const {
-      sum, sumError, accountId, loading, detail,
+      sum, sumError, fromId, toId, loading, detail,
     } = this.state;
     const { accounts, accountsLoading } = this.props;
     return (
       <Container marginTop>
         <WhiteCard>
-          En esta sección regitras los ingresos a tus cuentas, por ejemplo, cuando recibes tu sueldo o un amigo te paga una deuda.
+          En esta sección transfiere dinero entre cuentas, por ejemplo, cuando haces un giro en un cajero automático o un depósito en tu cuenta corriente
         </WhiteCard>
         <Form onSubmit={this.handleSubmit}>
           <Dropdown
             options={accounts}
-            value={accountId}
-            onSelect={this.handleMethodChange}
-            placeholder="Cuenta"
+            value={fromId}
+            onSelect={this.handleFromChange}
+            placeholder="Origen"
+            loading={accountsLoading}
+          />
+          <Dropdown
+            options={accounts.filter(acc => acc.id !== fromId)}
+            value={toId}
+            onSelect={this.handleToChange}
+            placeholder="Destino"
             loading={accountsLoading}
           />
           <TextInput

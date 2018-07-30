@@ -11,6 +11,11 @@ export const CardHeader = styled.div`
 
 export const CardItem = styled.div`
   font-size: 13px;
+  display: flex;
+  align-items: center;
+  > .material-icons {
+    font-size: 13px;
+  }
 `;
 
 export const Card = styled.div`

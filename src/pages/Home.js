@@ -15,6 +15,7 @@ import { HomeAppBar, AppBar } from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
 import Activity from './home/pages/Activity';
 import AddFounds from './home/pages/AddFounds';
+import Transfer from './home/pages/Transfer';
 
 class Home extends Component {
   constructor(props) {
@@ -87,13 +88,14 @@ class Home extends Component {
     }));
   }
 
-  updateUI(activity, accountId, accountBalance) {
+  updateUI(activity, updatedAccounts) {
     const { activities, accounts } = this.state;
     this.setState({
       activities: [activity, ...activities],
       accounts: accounts.map((acc) => {
-        if (acc.id === accountId) {
-          return Object.assign({}, acc, { balance: accountBalance });
+        const newAccountData = updatedAccounts.find(uAcc => uAcc.id === acc.id);
+        if (newAccountData) {
+          return Object.assign({}, acc, newAccountData);
         }
         return acc;
       }),
@@ -190,6 +192,20 @@ class Home extends Component {
               <Fragment>
                 <AppBar title="Añadir fondos" />
                 <AddFounds
+                  accounts={accounts}
+                  accountsLoading={accountsLoading}
+                  updateUI={this.updateUI}
+                  history={history}
+                />
+              </Fragment>
+            )}
+          />
+          <Route
+            path="/transfer"
+            render={({ history }) => (
+              <Fragment>
+                <AppBar title="Transferir entre cuentas" />
+                <Transfer
                   accounts={accounts}
                   accountsLoading={accountsLoading}
                   updateUI={this.updateUI}

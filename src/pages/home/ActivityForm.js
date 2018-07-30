@@ -80,8 +80,9 @@ class ActivityForm extends Component {
       // Update UI optimiscally
       updateUI(
         Object.assign({}, activity, { id: activityId }),
-        accountId,
-        accountData.balance,
+        [
+          Object.assign({}, accountData, { id: accountId }),
+        ],
       );
 
       // update rest of firestore

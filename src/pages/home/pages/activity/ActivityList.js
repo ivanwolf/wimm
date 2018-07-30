@@ -7,6 +7,7 @@ import {
   Card, CardHeader, CardItem, WhiteCard,
 } from '../../../../components/Card';
 import Touchable from '../../../../components/Touchable';
+import Icon from '../../../../components/Icon';
 import ScrollState from '../../../../components/utils/ScrollState';
 import colors from '../../../../config/colors';
 
@@ -126,12 +127,50 @@ const ExpenseCard = ({ activity, ...props }) => {
   );
 };
 
+const TransferCard = ({ activity, ...props }) => {
+  const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  return (
+    <BaseCard
+      {...props}
+      color={colors.yellow}
+      renderLeft={() => (
+        <Fragment>
+          <CardHeader color={colors.yellow}>
+            Traspaso
+          </CardHeader>
+          <CardItem>
+            {`${date}`}
+          </CardItem>
+          <CardItem>
+            {activity.detail}
+          </CardItem>
+        </Fragment>
+      )}
+      renderRight={() => (
+        <Fragment>
+          <CardHeader color={colors.yellow}>
+            {`$${formatSum(activity.sum)}`}
+          </CardHeader>
+          <CardItem>
+            {activity.from.name}
+            <Icon name="keyboard_arrow_right" />
+            {activity.to.name}
+          </CardItem>
+        </Fragment>
+      )}
+    />
+  );
+}
+
 const ActivityCard = ({ activity, ...props }) => {
   if (activity.type === 'income') {
     return <IncomeCard activity={activity} {...props} />;
   }
   if (activity.type === 'expense') {
     return <ExpenseCard activity={activity} {...props} />;
+  }
+  if (activity.type === 'transfer') {
+    return <TransferCard activity={activity} {...props} />;
   }
   return null;
 };
