@@ -26,39 +26,114 @@ export const ActivityWrapper = Card.extend`
 `;
 
 
-const ActivityCard = ({ activity, onClick, selected, editMode }) => {
+const BaseCard = ({
+  onClick, selected, editMode, color, renderLeft, renderRight,
+}) => (
+  <ActivityWrapper
+    selected={selected}
+    onClick={onClick}
+    editMode={editMode}
+    color={color}
+  >
+    <Col>
+      {renderLeft()}
+    </Col>
+    <Col>
+      {renderRight()}
+    </Col>
+  </ActivityWrapper>
+);
+
+BaseCard.propTypes = {
+  onClick: PropTypes.func.isRequired,
+  selected: PropTypes.bool.isRequired,
+  editMode: PropTypes.bool.isRequired,
+  renderLeft: PropTypes.func.isRequired,
+  renderRight: PropTypes.func.isRequired,
+  color: PropTypes.string.isRequired,
+};
+
+
+const IncomeCard = ({ activity, ...props }) => {
   const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
   return (
-    <ActivityWrapper
-      selected={selected}
-      color={activity.category.color}
-      onClick={onClick}
-      editMode={editMode}
-    >
-      <Col>
-        <CardHeader color={activity.category.color}>
-          {`${activity.category.name}`}
-        </CardHeader>
-        <CardItem>
-          {`${date}`}
-        </CardItem>
-        <CardItem>
-          {`${activity.place.name}`}
-        </CardItem>
-        <CardItem>
-          {activity.detail}
-        </CardItem>
-      </Col>
-      <Col>
-        <CardHeader color={activity.category.color}>
-          {`$${formatSum(activity.sum)}`}
-        </CardHeader>
-        <CardItem>
-          {activity.account.name}
-        </CardItem>
-      </Col>
-    </ActivityWrapper>
+    <BaseCard
+      {...props}
+      color={colors.green}
+      renderLeft={() => (
+        <Fragment>
+          <CardHeader color={colors.green}>
+            Ingreso
+          </CardHeader>
+          <CardItem>
+            {`${date}`}
+          </CardItem>
+          <CardItem>
+            {activity.detail}
+          </CardItem>
+        </Fragment>
+      )}
+      renderRight={() => (
+        <Fragment>
+          <CardHeader color={colors.green}>
+            {`$${formatSum(activity.sum)}`}
+          </CardHeader>
+          <CardItem>
+            {activity.account.name}
+          </CardItem>
+        </Fragment>
+      )}
+    />
   );
+};
+
+const ExpenseCard = ({ activity, ...props }) => {
+  const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  const {
+    category, place, detail, sum, account,
+  } = activity;
+  return (
+    <BaseCard
+      color={category.color}
+      {...props}
+      renderLeft={() => (
+        <Fragment>
+          <CardHeader color={category.color}>
+            {`${category.name}`}
+          </CardHeader>
+          <CardItem>
+            {`${date}`}
+          </CardItem>
+          <CardItem>
+            {`${place.name}`}
+          </CardItem>
+          <CardItem>
+            {detail}
+          </CardItem>
+        </Fragment>
+      )}
+      renderRight={() => (
+        <Fragment>
+          <CardHeader color={category.color}>
+            {`$${formatSum(sum)}`}
+          </CardHeader>
+          <CardItem>
+            {account.name}
+          </CardItem>
+        </Fragment>
+      )}
+    />
+  );
+};
+
+const ActivityCard = ({ activity, ...props }) => {
+  if (activity.type === 'income') {
+    return <IncomeCard activity={activity} {...props} />;
+  }
+  if (activity.type === 'expense') {
+    return <ExpenseCard activity={activity} {...props} />;
+  }
+  return null;
 };
 
 ActivityCard.propTypes = {

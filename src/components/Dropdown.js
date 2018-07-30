@@ -25,7 +25,7 @@ const MenuWrapper = styled.div`
   position: absolute;
   left: 0;
   right: 0;
-  background-color: ${colors.grayLighter};
+  background-color: ${colors.white};
   z-index: 1;
   top: calc(3rem + 4px);
   transition: max-height .4s ease;
@@ -115,6 +115,7 @@ class DropdownHOC extends Component {
           value={currentOption ? currentOption.name : ''}
           error={error}
           onClick={this.toggleOpenMenu}
+          onBlur={this.toggleOpenMenu}
           readOnly
           active={isOpen}
           placeholder={placeholder}

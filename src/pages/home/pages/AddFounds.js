@@ -4,6 +4,10 @@ import { Container } from '../../../components/Layout';
 import { TextInput, Button } from '../../../components/Input';
 import { Dropdown } from '../../../components/Dropdown';
 import { WhiteCard } from '../../../components/Card';
+import { getCurrentUser } from '../../../utils/session';
+import {
+  createActivity, updateAccount,
+} from '../../../utils/firestore';
 
 
 const Form = styled.form`
@@ -16,38 +20,79 @@ class AddFound extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      mount: '',
+      sum: '',
       accountId: '',
-      mountError: '',
+      sumError: '',
+      detail: '',
       loading: false,
     };
-    this.handleMountChange = this.handleMountChange.bind(this);
+    this.handleSumChange = this.handleSumChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleMethodChange = this.handleMethodChange.bind(this);
+    this.hanldeDetailChange = this.hanldeDetailChange.bind(this);
   }
 
-  handleMountChange(ev) {
-    this.setState({ mount: ev.target.value });
+  handleSumChange(ev) {
+    this.setState({ sum: ev.target.value });
+  }
+
+  hanldeDetailChange(ev) {
+    this.setState({ detail: ev.target.value });
   }
 
   handleMethodChange(accountId) {
     this.setState({ accountId });
   }
 
-  handleSubmit(ev) {
-    ev.prenvetDefault();
-    console.log(this.state);
+  async handleSubmit(ev) {
+    ev.preventDefault();
+    const { accounts, updateUI, history } = this.props;
+    await this.setState({ loading: true });
+    try {
+      const { sum, accountId, detail } = this.state;
+      const account = accounts.find(me => me.id === accountId);
+
+      const activity = {
+        createdAt: Date.now(),
+        sum: parseInt(sum, 10),
+        type: 'income',
+        account: {
+          id: accountId,
+          name: account.name,
+        },
+        detail,
+      };
+
+      const accountData = {
+        activityCount: account.activityCount + 1,
+        balance: account.balance + activity.sum,
+      };
+
+      const user = getCurrentUser();
+      const activityId = await createActivity(user, activity);
+
+      updateUI(
+        Object.assign({}, activity, { id: activityId }),
+        accountId,
+        accountData.balance,
+      );
+      await updateAccount(user, accountId, accountData);
+      history.push('/');
+    } catch (err) {
+      console.log(err);
+      this.setState({ loading: false });
+    }
   }
 
   render() {
     const {
-      mount, mountError, accountId, loading,
+      sum, sumError, accountId, loading, detail,
     } = this.state;
     const { accounts, accountsLoading } = this.props;
     return (
       <Container marginTop>
         <WhiteCard>
-          Mantén tu billetera actualizada, escoge un medio de pago y cúanto dinero agregar.
+          En esta sección regitras los ingresos a tus cuentas, por ejemplo, cuando recibes tu sueldo o un amigo te paga una deuda.
         </WhiteCard>
         <Form onSubmit={this.handleSubmit}>
           <Dropdown
@@ -59,14 +104,21 @@ class AddFound extends Component {
           />
           <TextInput
             type="number"
-            value={mount}
-            onChange={this.handleMountChange}
-            error={mountError}
+            value={sum}
+            onChange={this.handleSumChange}
+            error={sumError}
             placeholder="Monto (CLP)"
+          />
+          <TextInput
+            type="text"
+            value={detail}
+            onChange={this.hanldeDetailChange}
+            placeholder="Detalle"
+            error=""
           />
           <Button
             type="submit"
-            disabled={!mount || loading}
+            disabled={!sum || loading}
           >
             OK
           </Button>

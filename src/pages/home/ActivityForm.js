@@ -106,8 +106,6 @@ class ActivityForm extends Component {
 
       // Close form
       // toggleOpenForm();
-
-      
     } catch (err) {
       console.log(err);
       this.setState({ loading: false });

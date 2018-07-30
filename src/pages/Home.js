@@ -186,12 +186,14 @@ class Home extends Component {
         <Switch>
           <Route
             path="/add_founds"
-            render={() => (
+            render={({ history }) => (
               <Fragment>
                 <AppBar title="Añadir fondos" />
                 <AddFounds
                   accounts={accounts}
                   accountsLoading={accountsLoading}
+                  updateUI={this.updateUI}
+                  history={history}
                 />
               </Fragment>
             )}
