@@ -44,7 +44,10 @@ const Avatar = styled.div`
   background-color: ${colors.violette};
   color: ${colors.white};
   height: 8rem;
-  padding: 0.7rem;
+  display: flex;
+  align-items: center;
+  padding: 1.2rem;
+  font-size: x-large;
 `;
 
 const Footer = styled.div`
@@ -91,6 +94,7 @@ const StyledLink = styled.a`
 const SignOutButton = CleanButton.extend`
   font-size: 15px;
   padding: 0 0.5rem;
+  color: ${colors.violette};
 `;
 
 const FunctionContext = React.createContext(() => {});
@@ -130,7 +134,7 @@ const SideMenu = ({
     <Overlay active={active} onClick={onOverlayClick} />
     <SideMenuWrapper active={active}>
       <Avatar>
-        {username}
+        {`Hola ${username}`}
       </Avatar>
       <FunctionContext.Provider value={onOverlayClick}>
         <Container verticalPadding>
