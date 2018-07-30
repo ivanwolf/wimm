@@ -54,6 +54,7 @@ const IconWrapper = styled.div.attrs({
   `}
   ${({ rightSecond }) => rightSecond && css`
     right: calc(.7rem + 40px);
+    color: ${colors.grayLight};
   `}
   ${({ hidden }) => hidden && css`
     opacity: 0;
