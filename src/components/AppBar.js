@@ -33,7 +33,10 @@ const TitleWrapper = styled.div`
   transition: opacity .4s ease;
   ${({ hidden }) => hidden && css`
     opacity: 0;
-
+  `}
+  ${({ main }) => main && css`
+    font-family: 'Lily Script One', cursive;
+    font-size: x-large;
   `}
 `;
 
@@ -121,7 +124,7 @@ export const HomeAppBar = ({
       )}
       renderTitle={() => (
         <Fragment>
-          <TitleWrapper hidden={editMode || openForm}>
+          <TitleWrapper main hidden={editMode || openForm}>
             MangoApp
           </TitleWrapper>
           <TitleWrapper hidden={editMode || !openForm}>
