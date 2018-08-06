@@ -3,8 +3,8 @@ const getBalanceRelativeToAccount = (activity, accountId) => {
     if (activity.type === 'expense') return -activity.sum;
     if (activity.type === 'income') return activity.sum;
   }
-  if (activity.from.id === accountId) return -activity.sum;
-  if (activity.to.id === accountId) return activity.sum;
+  if (activity.from && activity.from.id === accountId) return -activity.sum;
+  if (activity.to && activity.to.id === accountId) return activity.sum;
   return 0;
 };
 
@@ -17,8 +17,8 @@ const getTotalRelativeToCategory = (activity, categoryId) => {
 
 const activityRelativeToAccount = (activity, accountId) => (
   (activity.account && activity.account.id === accountId)
-  || (activity.from.id === accountId)
-  || (activity.to.id === accountId)
+  || (activity.from && activity.from.id === accountId)
+  || (activity.to && activity.to.id === accountId)
 );
 
 const activityRelatedToCategory = (activity, categoryID) => (
