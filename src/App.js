@@ -33,7 +33,7 @@ class App extends Component {
       if (user) {
         getUserDoc(user).get().then((doc) => {
           if (doc.exists) {
-            history.replace('/home');
+            history.replace('/home/accounts');
           } else {
             console.log('Hola');
             history.replace('/setup');

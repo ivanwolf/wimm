@@ -138,19 +138,19 @@ const SideMenu = ({
       </Avatar>
       <FunctionContext.Provider value={onOverlayClick}>
         <Container verticalPadding>
-          <Link to="/" message="Balance e historial de actividades">
+          <Link to="/home" message="Balance e historial de actividades">
             Movimientos
           </Link>
-          <Link to="/add_founds" message="Registra tus ingresos">
+          <Link to="/home/add_founds" message="Registra tus ingresos">
             Añadir fondos
           </Link>
-          <Link to="/transfer" message="Traspasa fondos de una cuenta a otra">
+          <Link to="/home/transfer" message="Traspasa fondos de una cuenta a otra">
             Transferir entre cuentas
           </Link>
-          <Link to="/stats" disabled message="Resumen por día, semana y mes">
+          <Link to="/home/stats" disabled message="Resumen por día, semana y mes">
             Estadísticas
           </Link>
-          <Link to="/settings" disabled message="Agrega o elimina tus categorías y cuentas">
+          <Link to="/home/accounts" message="Configura tus cuentas y categorías">
             Configuración
           </Link>
         </Container>

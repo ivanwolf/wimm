@@ -11,14 +11,14 @@ const Summary = ({ accounts }) => (
     </WhiteCard>
     <Card>
       <Col>
-        {accounts.map(acc => acc.hasBalance && (
+        {accounts.map(acc => acc.active && (
           <CardHeader key={acc.id}>
             {acc.name}
           </CardHeader>
         ))}
       </Col>
       <Col>
-        {accounts.map(acc => acc.hasBalance && (
+        {accounts.map(acc => acc.active && (
           <CardHeader key={acc.id}>
             {`$${formatSum(acc.balance)}`}
           </CardHeader>

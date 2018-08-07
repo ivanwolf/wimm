@@ -17,6 +17,7 @@ import withUser from '../hocs/userContext';
 import Activity from './home/pages/Activity';
 import AddFounds from './home/pages/AddFounds';
 import Transfer from './home/pages/Transfer';
+import Accounts from './home/pages/Accounts';
 
 class Home extends Component {
   constructor(props) {
@@ -185,7 +186,16 @@ class Home extends Component {
         />
         <Switch>
           <Route
-            path="/add_founds"
+            path="/home/accounts"
+            render={() => (
+              <Fragment>
+                <AppBar title="Configuración" />
+                <Accounts accounts={accounts} />
+              </Fragment>
+            )}
+          />
+          <Route
+            path="/home/add_founds"
             render={({ history }) => (
               <Fragment>
                 <AppBar title="Añadir fondos" />
@@ -199,7 +209,7 @@ class Home extends Component {
             )}
           />
           <Route
-            path="/transfer"
+            path="/home/transfer"
             render={({ history }) => (
               <Fragment>
                 <AppBar title="Transferir entre cuentas" />
@@ -213,7 +223,7 @@ class Home extends Component {
             )}
           />
           <Route
-            path="/"
+            path="/home"
             render={() => (
               <Fragment>
                 <HomeAppBar
