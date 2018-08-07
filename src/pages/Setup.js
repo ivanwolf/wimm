@@ -1,35 +1,32 @@
 import React, { Component } from 'react';
-import { Page, Container } from '../components/Layout';
+import { Page } from '../components/Layout';
 import { Spinner } from '../components/spinner/Spinner';
-import { Redirect } from 'react-router-dom';
 import { Text } from '../components/Typography';
-import { getCurrentUser } from '../utils/session';
 import { createInitialDocument } from '../utils/firestore';
+import withUser from '../hocs/userContext';
 
-class InitialSetup extends Component {
+class Setup extends Component {
   constructor(props) {
     super(props);
     this.state = {
       error: null,
-      ready: false,
     };
   }
 
   componentDidMount() {
-    const user = getCurrentUser();
+    const { user, history } = this.props;
     createInitialDocument(user).then(() => {
-      this.setState({ ready: true });
+      history.replace('/home');
     }).catch((error) => {
-      console.log(error);
       this.setState({ error: error.code });
     });
   }
 
   render() {
-    const { ready } = this.state;
-    if (ready) return <Redirect to="/" />;
+    const { error } = this.state;
+    if (error) return <div>Error</div>;
     return (
-      <Page centerContent column marginBottom>
+      <Page centerContent column>
         <Text>
           Estamos configurando tu cuenta
         </Text>
@@ -39,4 +36,4 @@ class InitialSetup extends Component {
   }
 }
 
-export default InitialSetup;
+export default withUser(Setup);
