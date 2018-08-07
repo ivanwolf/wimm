@@ -4,19 +4,20 @@ export const initialAccounts = [
   {
     name: 'Efectivo',
     activityCount: 0,
-    hasBalance: true,
+    active: true,
     balance: 0,
   },
   {
     name: 'Débito',
     activityCount: 0,
-    hasBalance: true,
+    active: true,
     balance: 0,
   },
   {
     name: 'Crédito',
     activityCount: 0,
-    hasBalance: false,
+    active: false,
+    balance: 0,
   },
 ];
 
@@ -28,7 +29,7 @@ export const initialCategories = [
     total: 0,
   },
   {
-    name: 'Supermercado',
+    name: 'Super',
     color: colors.orange,
     activityCount: 0,
     total: 0,
