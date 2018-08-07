@@ -13,6 +13,7 @@ import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
 import { HomeAppBar, AppBar } from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
+import withUser from '../hocs/userContext';
 import Activity from './home/pages/Activity';
 import AddFounds from './home/pages/AddFounds';
 import Transfer from './home/pages/Transfer';
@@ -147,10 +148,6 @@ class Home extends Component {
   }
 
   render() {
-    const username = getCurrentUser().displayName;
-    if (!username) {
-      return <Redirect to="/username" />;
-    }
     const {
       openForm,
       openMenu,
@@ -165,6 +162,7 @@ class Home extends Component {
       selectedActivities,
     } = this.state;
     const isLoading = accountsLoading || activitiesLoading;
+    const { user } = this.props;
     return (
       <Page>
         <Drawer active={openForm}>
@@ -182,7 +180,7 @@ class Home extends Component {
         <SideMenu
           active={openMenu}
           onOverlayClick={this.toggleOpenMenu}
-          username={username}
+          username={user.displayName}
           onSignOutClick={signOut}
         />
         <Switch>
@@ -254,4 +252,4 @@ Home.propTypes = {
   handleLocationChange: PropTypes.func.isRequired,
 };
 
-export default withLocation(Home);
+export default withUser(withLocation(Home));

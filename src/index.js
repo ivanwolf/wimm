@@ -39,21 +39,4 @@ const renderApp = () => {
   );
 };
 
-const renderLogin = () => {
-  ReactDOM.render(<Login />, document.getElementById('root'));
-};
-
-const renderSplash = () => {
-  ReactDOM.render(<Splash />, document.getElementById('root'));
-};
-
-firebase.auth().onAuthStateChanged((user) => {
-  if (user) {
-    console.log(user.uid);
-    renderApp();
-  } else {
-    renderLogin();
-  }
-});
-
-renderSplash();
+renderApp();
