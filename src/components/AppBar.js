@@ -13,7 +13,7 @@ const AppBarWrapper = styled.div`
   left: 0;
   right: 0;
   align-items: center;
-  z-index: 1;
+  z-index: 3;
   height: 4rem;
   background-color: ${colors.white};
   padding: 0 0.7rem;
@@ -99,6 +99,35 @@ AppBarHOC.propTypes = {
   renderTitle: PropTypes.func.isRequired,
   renderRight: PropTypes.func,
 };
+
+export const SettingsAppBar = withRouter(({
+  openForm,
+  toggleOpenForm,
+  goBack,
+}) => (
+  <AppBarHOC
+    renderLeft={() => (
+      <IconWrapper hidden={openForm} onClick={goBack}>
+        <Icon name="akrrow_back" />
+      </IconWrapper>
+    )}
+    renderTitle={() => (
+      <Fragment>
+        <TitleWrapper hidden={openForm}>
+          Configuración
+        </TitleWrapper>
+        <TitleWrapper hidden={!openForm}>
+          Agregar cuenta
+        </TitleWrapper>
+      </Fragment>
+    )}
+    renderRight={() => (
+      <IconWrapper right onClick={toggleOpenForm}>
+        <RotateIcon rotate={openForm} name="add" />
+      </IconWrapper>
+    )}
+  />
+));
 
 
 export const HomeAppBar = ({

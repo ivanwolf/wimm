@@ -14,13 +14,18 @@ const ToggleOff = () => <GrayIcon name="toggle_off" />;
 const ToggleOn = () => <Icon name="toggle_on" />;
 
 const ToggleWrapper = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
+  flex: 1;
 `;
 
 const IconWrapper = styled.div.attrs({
   onClick: ({ active, onClick }) => active && onClick,
 })`
   position: absolute;
+  height: 24px;
   transition: opacity .4s ease;
   opacity: 0;
   ${({ active }) => active && css`
@@ -46,6 +51,7 @@ const Toggle = ({ active, onClick }) => {
 Toggle.propTypes = {
   active: PropTypes.bool.isRequired,
   onClick: PropTypes.func.isRequired,
+  value: PropTypes.string.isRequired,
 };
 
 export default Toggle;

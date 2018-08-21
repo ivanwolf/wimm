@@ -52,6 +52,11 @@ export const createActivity = (user, data) => (
   getUserDoc(user).collection('activities').add(data).then(doc => doc.id)
 );
 
+export const createAccount = (user, data) => (
+  getUserDoc(user).collection('accounts').add(data).then(docRef => docRef.get())
+    .then(snapshot => snapshot.data())
+);  
+
 export const createPlace = (user, place) => (
   getUserDoc(user).collection('places').doc(place.id).set({
     name: place.name,

@@ -42,6 +42,7 @@ class Home extends Component {
     this.handleSelectActivity = this.handleSelectActivity.bind(this);
     this.clearSelectedActivities = this.clearSelectedActivities.bind(this);
     this.handleDeleteActivities = this.handleDeleteActivities.bind(this);
+    this.addAccountToState = this.addAccountToState.bind(this);
   }
 
   componentDidMount() {
@@ -90,12 +91,19 @@ class Home extends Component {
     }));
   }
 
+  addAccountToState(account) {
+    this.setState(state => ({
+      accounts: [account, ...state.accounts]
+    }));
+  }
+
   updateUI(activity, updatedAccounts) {
     const { activities, accounts } = this.state;
-    this.setState({
-      activities: [activity, ...activities],
+    const newActivities = activity ? [activity, ...activities] : activities;
+    return this.setState({
+      activities: newActivities,
       accounts: accounts.map((acc) => {
-        const newAccountData = updatedAccounts.find(uAcc => uAcc.id === acc.id);
+        const newAccountData = updatedAccounts && updatedAccounts.find(uAcc => uAcc.id === acc.id);
         if (newAccountData) {
           return Object.assign({}, acc, newAccountData);
         }
@@ -188,10 +196,12 @@ class Home extends Component {
           <Route
             path="/home/accounts"
             render={() => (
-              <Fragment>
-                <AppBar title="Configuración" />
-                <Accounts accounts={accounts} />
-              </Fragment>
+              <Accounts
+                accounts={accounts}
+                addAccountToState={this.addAccountToState}
+                user={user}
+                updateUI={this.updateUI}
+              />
             )}
           />
           <Route

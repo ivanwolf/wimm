@@ -36,7 +36,7 @@ class ActivityForm extends Component {
         sum, placeId, accountId, categoryId, detail,
       } = this.state;
       const {
-        places, accounts, categories, toggleOpenForm, updateUI,
+        places, accounts, categories, updateUI,
       } = this.props;
 
       const place = places.find(pl => pl.id === placeId);
