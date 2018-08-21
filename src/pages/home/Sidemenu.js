@@ -16,7 +16,7 @@ const SideMenuWrapper = styled.div`
   transition: transform .5s ease;
   transform: translateX(-100vw);
   background-color: ${colors.white};
-  z-index: 3;
+  z-index: 4;
   display: flex;
   flex-direction: column;
   ${({ active }) => active && css`
@@ -36,7 +36,7 @@ const Overlay = styled.div`
   z-index: -1;
   ${({ active }) => active && css`
     opacity: .75;
-    z-index: 2;
+    z-index: 4;
   `}
 `;
 
