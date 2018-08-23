@@ -1,10 +1,10 @@
-import React, { Component, Fragment } from 'react';
+import React, { Component } from 'react';
 import { Container } from '../../../components/Layout';
 import Drawer from '../../../components/Drawer';
 import AccountList from './accounts/AccountList';
 import Form from './accounts/NewAccountForm';
-import { updateAccount, createAccount } from '../../../utils/firestore';
 import { SettingsAppBar } from '../../../components/AppBar';
+import { connect } from '../../../components/utils/Provider';
 
 class Settings extends Component {
   constructor(props) {
@@ -20,28 +20,24 @@ class Settings extends Component {
   }
 
   async handleNewAccount(name, balance) {
-    const { user, addAccountToState } = this.props;
+    const { createAccount } = this.props;
     await this.setState({ loading: true });
-    const account = await createAccount(user, {
+    const account = {
       name,
       balance,
       active: true,
       activityCount: 0,
-    });
-    await addAccountToState(account);
+    };
+    await createAccount(account);
     await this.setState({ loading: false, openForm: false });
   }
 
-  handleAccountToggle(accountId, active) {
-    const { user, updateUI } = this.props;
-    updateAccount(user, accountId, {
+  async handleAccountToggle(accountId, active) {
+    const { updateAccounts } = this.props;
+    await updateAccounts([{
+      id: accountId,
       active: !active,
-    }).then(() => {
-      updateUI(null, [{
-        id: accountId,
-        active: !active,
-      }]);
-    });
+    }]);
   }
 
   toggleOpenForm() {
@@ -75,4 +71,9 @@ class Settings extends Component {
 }
 
 
-export default Settings;
+export default connect(
+  'accounts',
+)(
+  'createAccount',
+  'updateAccounts',
+)(Settings);

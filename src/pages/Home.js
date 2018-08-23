@@ -1,11 +1,8 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Redirect, Switch, Route } from 'react-router-dom';
+import { Switch, Route } from 'react-router-dom';
 import { getCurrentUser, signOut } from '../utils/session';
 import { getUserPlaces } from '../utils/maps';
-import {
-  getAccounts, getActivities, getCategories, deleteActivites,
-} from '../utils/firestore';
 import { accountsToUpdate, categoriesToUpdate } from '../utils/lambda';
 import { Page } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
@@ -14,6 +11,7 @@ import Drawer from '../components/Drawer';
 import { HomeAppBar, AppBar } from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
 import withUser from '../hocs/userContext';
+import { connect } from '../components/utils/Provider';
 import Activity from './home/pages/Activity';
 import AddFounds from './home/pages/AddFounds';
 import Transfer from './home/pages/Transfer';
@@ -27,35 +25,21 @@ class Home extends Component {
       openForm: false,
       places: [],
       placesLoading: false,
-      accounts: [],
-      accountsLoading: true,
-      categories: [],
-      categoriesLoading: true,
-      activities: [],
-      activitiesLoading: true,
       selectedActivities: [],
     };
     this.toggleOpenMenu = this.toggleOpenMenu.bind(this);
     this.toggleOpenForm = this.toggleOpenForm.bind(this);
     this.getPlacesOptions = this.getPlacesOptions.bind(this);
-    this.updateUI = this.updateUI.bind(this);
     this.handleSelectActivity = this.handleSelectActivity.bind(this);
     this.clearSelectedActivities = this.clearSelectedActivities.bind(this);
     this.handleDeleteActivities = this.handleDeleteActivities.bind(this);
-    this.addAccountToState = this.addAccountToState.bind(this);
   }
 
   componentDidMount() {
-    const user = getCurrentUser();
-    getAccounts(user).then((accounts) => {
-      this.setState({ accounts, accountsLoading: false });
-    });
-    getCategories(user).then((categories) => {
-      this.setState({ categories, categoriesLoading: false });
-    });
-    getActivities(user).then((activities) => {
-      this.setState({ activities, activitiesLoading: false });
-    });
+    const { fetchAccounts, fetchActivities, fetchCategories } = this.props;
+    fetchAccounts();
+    fetchActivities();
+    fetchCategories();
   }
 
   getPlacesOptions() {
@@ -91,28 +75,6 @@ class Home extends Component {
     }));
   }
 
-  addAccountToState(account) {
-    this.setState(state => ({
-      accounts: [account, ...state.accounts]
-    }));
-  }
-
-  updateUI(activity, updatedAccounts) {
-    const { activities, accounts } = this.state;
-    const newActivities = activity ? [activity, ...activities] : activities;
-    return this.setState({
-      activities: newActivities,
-      accounts: accounts.map((acc) => {
-        const newAccountData = updatedAccounts && updatedAccounts.find(uAcc => uAcc.id === acc.id);
-        if (newAccountData) {
-          return Object.assign({}, acc, newAccountData);
-        }
-        return acc;
-      }),
-      openForm: false,
-    });
-  }
-
   clearSelectedActivities() {
     this.setState({ selectedActivities: [] });
   }
@@ -131,26 +93,23 @@ class Home extends Component {
   }
 
   async handleDeleteActivities() {
+    const { selectedActivities } = this.state;
     const {
-      selectedActivities, activities, accounts, categories,
-    } = this.state;
-    const user = getCurrentUser();
+      activities,
+      accounts,
+      categories,
+      deleteActivities,
+      updateAccounts,
+      updateCategories,
+    } = this.props;
     const activitiesToDelete = activities.filter(act => selectedActivities.includes(act.id));
-    const updatedAccounts = accountsToUpdate(activitiesToDelete, accounts);
-    const updatedCategories = categoriesToUpdate(activitiesToDelete, categories);
+    const updatedAccountsData = accountsToUpdate(activitiesToDelete, accounts);
+    const updatedCategoriesData = categoriesToUpdate(activitiesToDelete, categories);
     try {
-      await deleteActivites(user, activitiesToDelete, updatedAccounts, updatedCategories);
-      this.setState({
-        selectedActivities: [],
-        activities: activities.filter(act => !selectedActivities.includes(act.id)),
-        accounts: accounts.map((acc) => {
-          const newAccountData = updatedAccounts.find(uAcc => uAcc.id === acc.id);
-          if (newAccountData) {
-            return Object.assign({}, acc, newAccountData);
-          }
-          return acc;
-        }),
-      });
+      await deleteActivities(selectedActivities);
+      await updateAccounts(updatedAccountsData);
+      await updateCategories(updatedCategoriesData);
+      this.clearSelectedActivities();
     } catch (err) {
       console.log(err);
     }
@@ -162,30 +121,11 @@ class Home extends Component {
       openMenu,
       placesLoading,
       places,
-      accounts,
-      accountsLoading,
-      categories,
-      categoriesLoading,
-      activities,
-      activitiesLoading,
       selectedActivities,
     } = this.state;
-    const isLoading = accountsLoading || activitiesLoading;
     const { user } = this.props;
     return (
       <Page>
-        <Drawer active={openForm}>
-          <ActivityForm
-            places={places}
-            placesLoading={placesLoading}
-            accounts={accounts}
-            accountsLoading={accountsLoading}
-            categories={categories}
-            categoriesLoading={categoriesLoading}
-            toggleOpenForm={this.toggleOpenForm}
-            updateUI={this.updateUI}
-          />
-        </Drawer>
         <SideMenu
           active={openMenu}
           onOverlayClick={this.toggleOpenMenu}
@@ -195,26 +135,14 @@ class Home extends Component {
         <Switch>
           <Route
             path="/home/accounts"
-            render={() => (
-              <Accounts
-                accounts={accounts}
-                addAccountToState={this.addAccountToState}
-                user={user}
-                updateUI={this.updateUI}
-              />
-            )}
+            component={Accounts}
           />
           <Route
             path="/home/add_founds"
             render={({ history }) => (
               <Fragment>
                 <AppBar title="Añadir fondos" />
-                <AddFounds
-                  accounts={accounts}
-                  accountsLoading={accountsLoading}
-                  updateUI={this.updateUI}
-                  history={history}
-                />
+                <AddFounds history={history} />
               </Fragment>
             )}
           />
@@ -223,12 +151,7 @@ class Home extends Component {
             render={({ history }) => (
               <Fragment>
                 <AppBar title="Transferir entre cuentas" />
-                <Transfer
-                  accounts={accounts}
-                  accountsLoading={accountsLoading}
-                  updateUI={this.updateUI}
-                  history={history}
-                />
+                <Transfer history={history} />
               </Fragment>
             )}
           />
@@ -236,6 +159,13 @@ class Home extends Component {
             path="/home"
             render={() => (
               <Fragment>
+                <Drawer active={openForm}>
+                  <ActivityForm
+                    places={places}
+                    placesLoading={placesLoading}
+                    toggleOpenForm={this.toggleOpenForm}
+                  />
+                </Drawer>
                 <HomeAppBar
                   openForm={openForm}
                   selectedActivitiesCount={selectedActivities.length}
@@ -247,9 +177,6 @@ class Home extends Component {
                 <Activity
                   handleSelectActivity={this.handleSelectActivity}
                   selectedActivities={selectedActivities}
-                  activities={activities}
-                  accounts={accounts}
-                  loading={isLoading}
                 />
               </Fragment>
             )}
@@ -270,6 +197,21 @@ Home.propTypes = {
     longitude: PropTypes.number.isRequired,
   }),
   handleLocationChange: PropTypes.func.isRequired,
+  deleteActivities: PropTypes.func.isRequired,
+  fetchActivities: PropTypes.func.isRequired,
+  fetchAccounts: PropTypes.func.isRequired,
+  fetchCategories: PropTypes.func.isRequired,
 };
 
-export default withUser(withLocation(Home));
+export default connect(
+  'activities',
+  'accounts',
+  'categories',
+)(
+  'fetchActivities',
+  'fetchAccounts',
+  'fetchCategories',
+  'deleteActivities',
+  'updateAccounts',
+  'updateCategories',
+)(withUser(withLocation(Home)));

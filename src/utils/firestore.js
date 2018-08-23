@@ -33,49 +33,38 @@ const toArray = (query) => {
   return docs;
 };
 
-/* GETS */
+/* FETCH */
 
-export const getAccounts = user => getUserDoc(user).collection('accounts').get().then(toArray);
-
-export const getCategories = user => getUserDoc(user).collection('categories').get().then(toArray);
-
-export const getActivities = user => (
+export const fetchCollection = (user, collection) => (
   getUserDoc(user)
-    .collection('activities')
+    .collection(collection)
     .get()
     .then(toArray)
 );
 
 /* CREATES */
 
-export const createActivity = (user, data) => (
-  getUserDoc(user).collection('activities').add(data).then(doc => doc.id)
-);
-
-export const createAccount = (user, data) => (
-  getUserDoc(user).collection('accounts').add(data).then(docRef => docRef.get())
+export const createDocument = (user, collection, data) => (
+  getUserDoc(user)
+    .collection(collection)
+    .add(data)
+    .then(docRef => docRef.get())
     .then(snapshot => snapshot.data())
-);  
-
-export const createPlace = (user, place) => (
-  getUserDoc(user).collection('places').doc(place.id).set({
-    name: place.name,
-    address: place.address,
-  })
-);
+)
 
 /* UPDATES */
 
-export const updateAccount = (user, accountId, data) => (
-  getUserDoc(user).collection('accounts').doc(accountId).update(data)
+export const updateDocument = (user, collection, { id, ...data }) => (
+  getUserDoc(user)
+    .collection(collection)
+    .doc(id)
+    .update(data)
 );
 
-export const updateCategory = (user, categoryId, data) => (
-  getUserDoc(user).collection('categories').doc(categoryId).update(data)
-);
-
-export const updatePlace = (user, placeId, data) => (
-  getUserDoc(user).collection('places').doc(placeId).update(data)
+export const updateDocuments = async (user, collection, items) => (
+  items.forEach(async (item) => {
+    await updateDocument(user, collection, item);
+  })
 );
 
 /* DELETES */
@@ -84,20 +73,9 @@ export const deleteActivity = (user, activityId) => (
   getUserDoc(user).collection('activities').doc(activityId).delete()
 );
 
+export const deleteActivities = async (user, ids) => (
+  ids.forEach(async (id) => {
+    await deleteActivity(user, id);
+  })
+);
 
-export const deleteActivites = (
-  user,
-  activitiesToDelete,
-  updatedAccounts,
-  updatedCategories,
-) => {
-  updatedCategories.forEach(async ({ id, ...data }) => {
-    await updateCategory(user, id, data);
-  });
-  updatedAccounts.forEach(async ({ id, ...data }) => {
-    await updateAccount(user, id, data);
-  });
-  activitiesToDelete.forEach(async (act) => {
-    await deleteActivity(user, act.id);
-  });
-};

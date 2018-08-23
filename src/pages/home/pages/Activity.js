@@ -4,15 +4,16 @@ import Summary from './activity/Summary';
 import ActivityList from './activity/ActivityList';
 import { Container } from '../../../components/Layout';
 import { SpinnerTwo } from '../../../components/spinner/Spinner';
+import { connect } from '../../../components/utils/Provider';
 
 const Activity = ({
   activities,
   accounts,
-  loading,
+  waiting,
   selectedActivities,
   handleSelectActivity,
 }) => {
-  if (loading) {
+  if (waiting.activities || waiting.accounts) {
     return (
       <Container centerContent marginTop>
         <SpinnerTwo />
@@ -36,7 +37,6 @@ Activity.propTypes = {
   activities: PropTypes.array.isRequired,
   selectedActivities: PropTypes.arrayOf(PropTypes.string).isRequired,
   accounts: PropTypes.array.isRequired,
-  loading: PropTypes.bool.isRequired,
 };
 
-export default Activity;
+export default connect('activities', 'accounts')(null)(Activity);

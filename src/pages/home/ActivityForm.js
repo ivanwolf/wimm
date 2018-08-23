@@ -3,10 +3,8 @@ import PropTypes from 'prop-types';
 import { Col } from '../../components/Layout';
 import { TextInput, Button } from '../../components/Input';
 import { Dropdown, LocationDropdown } from '../../components/Dropdown';
-import { getCurrentUser } from '../../utils/session';
-import {
-  createActivity, createPlace, updateAccount, updateCategory,
-} from '../../utils/firestore';
+import { connect } from '../../components/utils/Provider';
+
 
 class ActivityForm extends Component {
   constructor(props) {
@@ -18,7 +16,7 @@ class ActivityForm extends Component {
       detail: '',
       placeId: '',
       sumError: '',
-      loading: false,
+      submitting: false,
     };
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleSumChange = this.handleSumChange.bind(this);
@@ -30,13 +28,13 @@ class ActivityForm extends Component {
 
   async handleSubmit(ev) {
     ev.preventDefault();
-    await this.setState({ loading: true });
+    await this.setState({ submitting: true });
     try {
       const {
         sum, placeId, accountId, categoryId, detail,
       } = this.state;
       const {
-        places, accounts, categories, updateUI,
+        places, accounts, categories, createActivity, updateAccounts, updateCategories, toggleOpenForm,
       } = this.props;
 
       const place = places.find(pl => pl.id === placeId);
@@ -64,39 +62,25 @@ class ActivityForm extends Component {
       };
 
       const accountData = {
+        id: accountId,
         activityCount: account.activityCount + 1,
         balance: account.balance - activity.sum,
       };
 
       const categoryData = {
+        id: categoryId,
         activityCount: category.activityCount + 1,
         total: category.total + activity.sum,
       };
 
       // Create activity in firestore
-      const user = getCurrentUser();
-      const activityId = await createActivity(user, activity);
-
-      // Update UI optimiscally
-      updateUI(
-        Object.assign({}, activity, { id: activityId }),
-        [
-          Object.assign({}, accountData, { id: accountId }),
-        ],
-      );
-
-      // update rest of firestore
-      await createPlace(user, {
-        id: placeId,
-        name: place.name,
-        address: place.address,
-      });
-      await updateAccount(user, accountId, accountData);
-      await updateCategory(user, categoryId, categoryData);
+      await createActivity(activity);
+      await updateAccounts([accountData]);
+      await updateCategories([categoryData]);
 
       // Clear state
       await this.setState({
-        loading: false,
+        submitting: false,  
         sum: '',
         accountId: '',
         categoryId: '',
@@ -106,10 +90,9 @@ class ActivityForm extends Component {
       });
 
       // Close form
-      // toggleOpenForm();
+      toggleOpenForm();
     } catch (err) {
-      console.log(err);
-      this.setState({ loading: false });
+      this.setState({ submitting: false });
     }
   }
 
@@ -135,15 +118,14 @@ class ActivityForm extends Component {
 
   render() {
     const {
-      sum, sumError, accountId, categoryId, detail, placeId, loading,
+      sum, sumError, accountId, categoryId, detail, placeId, submitting,
     } = this.state;
     const {
       places,
       placesLoading,
       accounts,
-      accountsLoading,
       categories,
-      categoriesLoading,
+      waiting,
     } = this.props;
     return (
       <form onSubmit={this.handleSubmit}>
@@ -167,14 +149,14 @@ class ActivityForm extends Component {
             value={accountId}
             onSelect={this.handleMethodChange}
             placeholder="Cuenta"
-            loading={accountsLoading}
+            loading={waiting.accounts}
           />
           <Dropdown
             options={categories}
             value={categoryId}
             onSelect={this.handleLabelChange}
             placeholder="Categoría"
-            loading={categoriesLoading}
+            loading={waiting.categories}
           />
           <TextInput
             type="text"
@@ -185,7 +167,7 @@ class ActivityForm extends Component {
           />
           <Button
             type="submit"
-            disabled={!sum || loading}
+            disabled={!sum || submitting}
           >
             OK
           </Button>
@@ -205,9 +187,14 @@ ActivityForm.propTypes = {
   accounts: optionsTypes.isRequired,
   categories: optionsTypes.isRequired,
   placesLoading: PropTypes.bool.isRequired,
-  accountsLoading: PropTypes.bool.isRequired,
-  categoriesLoading: PropTypes.bool.isRequired,
   toggleOpenForm: PropTypes.func.isRequired,
 };
 
-export default ActivityForm;
+export default connect(
+  'accounts',
+  'categories',
+)(
+  'createActivity',
+  'updateAccounts',
+  'updateCategories',
+)(ActivityForm);

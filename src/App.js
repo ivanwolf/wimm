@@ -7,6 +7,7 @@ import Splash from './pages/Splash';
 import Setup from './pages/Setup';
 import Login from './pages/Login';
 import { UserProvider } from './hocs/userContext';
+import FirestoreProvider from './components/utils/Provider';
 
 class App extends Component {
   constructor(props) {
@@ -35,7 +36,6 @@ class App extends Component {
           if (doc.exists) {
             history.replace('/home');
           } else {
-            console.log('Hola');
             history.replace('/setup');
           }
         });
@@ -50,12 +50,14 @@ class App extends Component {
     if (!user) return <Splash />;
     return (
       <UserProvider value={user}>
-        <Switch>
-          <Route path="/setup" component={Setup} />
-          <Route path="/home" component={Home} />
-          <Route path="/login" component={Login} />
-          <Route path="/" component={Splash} />
-        </Switch>
+        <FirestoreProvider user={user}>
+          <Switch>
+            <Route path="/setup" component={Setup} />
+            <Route path="/home" component={Home} />
+            <Route path="/login" component={Login} />
+            <Route path="/" component={Splash} />
+          </Switch>
+        </FirestoreProvider>
       </UserProvider>
     );
   }

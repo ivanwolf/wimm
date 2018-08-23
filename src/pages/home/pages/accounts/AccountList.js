@@ -14,10 +14,6 @@ const Row = styled.div`
   `}
 `;
 
-const AccountName = styled.div`
-  font-size: large;
-`;
-
 const Left = styled.div`
   display: flex;
   flex: 1;

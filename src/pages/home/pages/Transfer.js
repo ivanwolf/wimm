@@ -4,10 +4,7 @@ import { Container } from '../../../components/Layout';
 import { TextInput, Button } from '../../../components/Input';
 import { Dropdown } from '../../../components/Dropdown';
 import { WhiteCard } from '../../../components/Card';
-import { getCurrentUser } from '../../../utils/session';
-import {
-  createActivity, updateAccount,
-} from '../../../utils/firestore';
+import { connect } from '../../../components/utils/Provider';
 
 
 const Form = styled.form`
@@ -16,7 +13,7 @@ const Form = styled.form`
   flex-direction: column;
 `;
 
-class AddFound extends Component {
+class Transfer extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -56,7 +53,12 @@ class AddFound extends Component {
 
   async handleSubmit(ev) {
     ev.preventDefault();
-    const { accounts, updateUI, history } = this.props;
+    const {
+      accounts,
+      updateAccounts,
+      createActivity,
+      history,
+    } = this.props;
     await this.setState({ loading: true });
     try {
       const {
@@ -82,28 +84,20 @@ class AddFound extends Component {
       };
 
       const fromData = {
+        id: fromId,
         activityCount: fromAccount.activityCount + 1,
         balance: fromAccount.balance - activity.sum,
       };
 
       const toData = {
+        id: toId,
         activityCount: toAccount.activityCount + 1,
         balance: toAccount.balance + activity.sum,
       };
 
-      const user = getCurrentUser();
-      const activityId = await createActivity(user, activity);
-
-      updateUI(
-        Object.assign({}, activity, { id: activityId }),
-        [
-          Object.assign({}, fromData, { id: fromId }),
-          Object.assign({}, toData, { id: toId }),
-        ],
-      );
-      await updateAccount(user, fromId, fromData);
-      await updateAccount(user, toId, toData);
-      history.push('/');
+      await createActivity(activity);
+      await updateAccounts([fromData, toData]);
+      history.push('/home');
     } catch (err) {
       console.log(err);
       this.setState({ loading: false });
@@ -114,7 +108,7 @@ class AddFound extends Component {
     const {
       sum, sumError, fromId, toId, loading, detail,
     } = this.state;
-    const { accounts, accountsLoading } = this.props;
+    const { accounts, waiting } = this.props;
     return (
       <Container marginTop>
         <WhiteCard>
@@ -126,14 +120,14 @@ class AddFound extends Component {
             value={fromId}
             onSelect={this.handleFromChange}
             placeholder="Origen"
-            loading={accountsLoading}
+            loading={waiting.accounts}
           />
           <Dropdown
             options={accounts.filter(acc => acc.id !== fromId)}
             value={toId}
             onSelect={this.handleToChange}
             placeholder="Destino"
-            loading={accountsLoading}
+            loading={waiting.accounts}
           />
           <TextInput
             type="number"
@@ -161,4 +155,9 @@ class AddFound extends Component {
   }
 }
 
-export default AddFound;
+export default connect(
+  'accounts',
+)(
+  'createActivity',
+  'updateAccounts',
+)(Transfer);
