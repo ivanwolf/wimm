@@ -103,21 +103,23 @@ AppBarHOC.propTypes = {
 export const SettingsAppBar = withRouter(({
   openForm,
   toggleOpenForm,
-  goBack,
+  history,
+  title,
+  formTitle,
 }) => (
   <AppBarHOC
     renderLeft={() => (
-      <IconWrapper hidden={openForm} onClick={goBack}>
-        <Icon name="akrrow_back" />
+      <IconWrapper hidden={openForm} onClick={history.goBack}>
+        <Icon name="arrow_back" />
       </IconWrapper>
     )}
     renderTitle={() => (
       <Fragment>
         <TitleWrapper hidden={openForm}>
-          Configuración
+          {title}
         </TitleWrapper>
         <TitleWrapper hidden={!openForm}>
-          Agregar cuenta
+          {formTitle}
         </TitleWrapper>
       </Fragment>
     )}

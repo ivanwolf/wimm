@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { Container } from '../../../components/Layout';
 import { TextInput, Button } from '../../../components/Input';
 import { Dropdown } from '../../../components/Dropdown';
 import { WhiteCard } from '../../../components/Card';
 import { connect } from '../../../components/utils/Provider';
+import { AppBar } from '../../../components/AppBar';
 
 
 const Form = styled.form`
@@ -110,47 +111,50 @@ class Transfer extends Component {
     } = this.state;
     const { accounts, waiting } = this.props;
     return (
-      <Container marginTop>
-        <WhiteCard>
-          En esta sección transfiere dinero entre cuentas, por ejemplo, cuando haces un giro en un cajero automático o un depósito en tu cuenta corriente
-        </WhiteCard>
-        <Form onSubmit={this.handleSubmit}>
-          <Dropdown
-            options={accounts}
-            value={fromId}
-            onSelect={this.handleFromChange}
-            placeholder="Origen"
-            loading={waiting.accounts}
-          />
-          <Dropdown
-            options={accounts.filter(acc => acc.id !== fromId)}
-            value={toId}
-            onSelect={this.handleToChange}
-            placeholder="Destino"
-            loading={waiting.accounts}
-          />
-          <TextInput
-            type="number"
-            value={sum}
-            onChange={this.handleSumChange}
-            error={sumError}
-            placeholder="Monto (CLP)"
-          />
-          <TextInput
-            type="text"
-            value={detail}
-            onChange={this.hanldeDetailChange}
-            placeholder="Detalle"
-            error=""
-          />
-          <Button
-            type="submit"
-            disabled={!sum || loading}
-          >
-            OK
-          </Button>
-        </Form>
-      </Container>
+      <Fragment>
+        <AppBar title="Transferir" />
+        <Container marginTop>
+          <WhiteCard>
+            En esta sección transfiere dinero entre cuentas, por ejemplo, cuando haces un giro en un cajero automático o un depósito en tu cuenta corriente
+          </WhiteCard>
+          <Form onSubmit={this.handleSubmit}>
+            <Dropdown
+              options={accounts}
+              value={fromId}
+              onSelect={this.handleFromChange}
+              placeholder="Origen"
+              loading={waiting.accounts}
+            />
+            <Dropdown
+              options={accounts.filter(acc => acc.id !== fromId)}
+              value={toId}
+              onSelect={this.handleToChange}
+              placeholder="Destino"
+              loading={waiting.accounts}
+            />
+            <TextInput
+              type="number"
+              value={sum}
+              onChange={this.handleSumChange}
+              error={sumError}
+              placeholder="Monto (CLP)"
+            />
+            <TextInput
+              type="text"
+              value={detail}
+              onChange={this.hanldeDetailChange}
+              placeholder="Detalle"
+              error=""
+            />
+            <Button
+              type="submit"
+              disabled={!sum || loading}
+            >
+              OK
+            </Button>
+          </Form>
+        </Container>
+      </Fragment>
     );
   }
 }

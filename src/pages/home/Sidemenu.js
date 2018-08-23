@@ -147,11 +147,14 @@ const SideMenu = ({
           <Link to="/home/transfer" message="Traspasa fondos de una cuenta a otra">
             Transferir entre cuentas
           </Link>
+          <Link to="/home/accounts" message="Configura tus cuentas">
+            Cuentas
+          </Link>
+          <Link to="/home/categories" message="Configura tus categorías">
+            Categorías
+          </Link>
           <Link to="/home/stats" disabled message="Resumen por día, semana y mes">
             Estadísticas
-          </Link>
-          <Link to="/home/accounts" message="Configura tus cuentas y categorías">
-            Configuración
           </Link>
         </Container>
       </FunctionContext.Provider>

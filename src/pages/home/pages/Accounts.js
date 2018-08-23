@@ -6,11 +6,10 @@ import Form from './accounts/NewAccountForm';
 import { SettingsAppBar } from '../../../components/AppBar';
 import { connect } from '../../../components/utils/Provider';
 
-class Settings extends Component {
+class SettingsAccounts extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedAccount: null,
       openForm: false,
       loading: false,
     };
@@ -53,7 +52,8 @@ class Settings extends Component {
         <SettingsAppBar
           openForm={openForm}
           toggleOpenForm={this.toggleOpenForm}
-          title="Configuración"
+          title="Cuentas"
+          formTitle="Agrega una cuenta"
         />
         <Drawer active={openForm}>
           <Form
@@ -76,4 +76,4 @@ export default connect(
 )(
   'createAccount',
   'updateAccounts',
-)(Settings);
+)(SettingsAccounts);

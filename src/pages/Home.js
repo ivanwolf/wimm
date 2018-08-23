@@ -1,14 +1,14 @@
 import React, { Component, Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Switch, Route } from 'react-router-dom';
-import { getCurrentUser, signOut } from '../utils/session';
+import { signOut } from '../utils/session';
 import { getUserPlaces } from '../utils/maps';
 import { accountsToUpdate, categoriesToUpdate } from '../utils/lambda';
 import { Page } from '../components/Layout';
 import ActivityForm from './home/ActivityForm';
 import SideMenu from './home/Sidemenu';
 import Drawer from '../components/Drawer';
-import { HomeAppBar, AppBar } from '../components/AppBar';
+import { HomeAppBar } from '../components/AppBar';
 import withLocation from '../hocs/LocationState';
 import withUser from '../hocs/userContext';
 import { connect } from '../components/utils/Provider';
@@ -133,28 +133,9 @@ class Home extends Component {
           onSignOutClick={signOut}
         />
         <Switch>
-          <Route
-            path="/home/accounts"
-            component={Accounts}
-          />
-          <Route
-            path="/home/add_founds"
-            render={({ history }) => (
-              <Fragment>
-                <AppBar title="Añadir fondos" />
-                <AddFounds history={history} />
-              </Fragment>
-            )}
-          />
-          <Route
-            path="/home/transfer"
-            render={({ history }) => (
-              <Fragment>
-                <AppBar title="Transferir entre cuentas" />
-                <Transfer history={history} />
-              </Fragment>
-            )}
-          />
+          <Route path="/home/accounts" component={Accounts} />
+          <Route path="/home/add_founds" component={AddFounds} />
+          <Route path="/home/transfer" component={Transfer} />
           <Route
             path="/home"
             render={() => (

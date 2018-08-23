@@ -1,10 +1,11 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import styled from 'styled-components';
 import { Container } from '../../../components/Layout';
 import { TextInput, Button } from '../../../components/Input';
 import { Dropdown } from '../../../components/Dropdown';
 import { WhiteCard } from '../../../components/Card';
 import { connect } from '../../../components/utils/Provider';
+import { AppBar } from '../../../components/AppBar';
 
 
 const Form = styled.form`
@@ -13,7 +14,7 @@ const Form = styled.form`
   flex-direction: column;
 `;
 
-class AddFound extends Component {
+class AddFounds extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -85,40 +86,43 @@ class AddFound extends Component {
     } = this.state;
     const { accounts, waiting } = this.props;
     return (
-      <Container marginTop>
-        <WhiteCard>
-          En esta sección regitras los ingresos a tus cuentas, por ejemplo, cuando recibes tu sueldo o un amigo te paga una deuda.
-        </WhiteCard>
-        <Form onSubmit={this.handleSubmit}>
-          <Dropdown
-            options={accounts}
-            value={accountId}
-            onSelect={this.handleMethodChange}
-            placeholder="Cuenta"
-            loading={waiting.accounts}
-          />
-          <TextInput
-            type="number"
-            value={sum}
-            onChange={this.handleSumChange}
-            error={sumError}
-            placeholder="Monto (CLP)"
-          />
-          <TextInput
-            type="text"
-            value={detail}
-            onChange={this.hanldeDetailChange}
-            placeholder="Detalle"
-            error=""
-          />
-          <Button
-            type="submit"
-            disabled={!sum || loading}
-          >
-            OK
-          </Button>
-        </Form>
-      </Container>
+      <Fragment>
+        <AppBar title="Añadir fondos" />
+        <Container marginTop>
+          <WhiteCard>
+            En esta sección regitras los ingresos a tus cuentas, por ejemplo, cuando recibes tu sueldo o un amigo te paga una deuda.
+          </WhiteCard>
+          <Form onSubmit={this.handleSubmit}>
+            <Dropdown
+              options={accounts}
+              value={accountId}
+              onSelect={this.handleMethodChange}
+              placeholder="Cuenta"
+              loading={waiting.accounts}
+            />
+            <TextInput
+              type="number"
+              value={sum}
+              onChange={this.handleSumChange}
+              error={sumError}
+              placeholder="Monto (CLP)"
+            />
+            <TextInput
+              type="text"
+              value={detail}
+              onChange={this.hanldeDetailChange}
+              placeholder="Detalle"
+              error=""
+            />
+            <Button
+              type="submit"
+              disabled={!sum || loading}
+            >
+              OK
+            </Button>
+          </Form>
+        </Container>
+      </Fragment>
     );
   }
 }
@@ -128,4 +132,4 @@ export default connect(
 )(
   'createActivity',
   'updateAccounts',
-)(AddFound);
+)(AddFounds);
