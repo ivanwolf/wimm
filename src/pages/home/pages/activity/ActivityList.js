@@ -205,7 +205,6 @@ const ActivityList = ({
                 editMode={editMode}
                 selected={selectedActivities.includes(act.id)}
                 activity={act}
-                onClick={editMode ? selectActivity(act.id) : () => {}}
               />
             </Touchable>
           ))

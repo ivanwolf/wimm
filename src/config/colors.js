@@ -12,4 +12,5 @@ export default {
   blueLight: '#4285f4',
   blue: '#3c5b9c',
   orange: '#f5820b',
+  selected: 'cornsilk',
 };

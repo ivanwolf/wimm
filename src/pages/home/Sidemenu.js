@@ -6,6 +6,7 @@ import { Container } from '../../components/Layout';
 import { CleanButton } from '../../components/Input';
 import colors from '../../config/colors';
 import pkg from '../../../package.json';
+import { OpenMenuConsumer } from '../../components/utils/OpenMenu';
 
 const SideMenuWrapper = styled.div`
   position: fixed;
@@ -97,19 +98,18 @@ const SignOutButton = CleanButton.extend`
   color: ${colors.violette};
 `;
 
-const FunctionContext = React.createContext(() => {});
 
 const InnerLink = ({
   history, to, location, children, message, disabled
 }) => (
-  <FunctionContext.Consumer>
-    {closeMenu => (
+  <OpenMenuConsumer
+    render={(open, toggleMenu) => (
       <Fragment>
         <StyledLink
           onClick={() => {
             if (!disabled) {
               history.push(to);
-              closeMenu();
+              toggleMenu();
             }
           }}
           disabled={disabled}
@@ -122,52 +122,52 @@ const InnerLink = ({
         </StyledLink>
       </Fragment>
     )}
-  </FunctionContext.Consumer>
+  />
 );
 
 const Link = withRouter(InnerLink);
 
-const SideMenu = ({
-  active, onOverlayClick, username, onSignOutClick,
-}) => (
-  <Fragment>
-    <Overlay active={active} onClick={onOverlayClick} />
-    <SideMenuWrapper active={active}>
-      <Avatar>
-        {`Hola ${username}`}
-      </Avatar>
-      <FunctionContext.Provider value={onOverlayClick}>
-        <Container verticalPadding>
-          <Link to="/home" message="Balance e historial de actividades">
-            Movimientos
-          </Link>
-          <Link to="/home/add_founds" message="Registra tus ingresos">
-            Añadir fondos
-          </Link>
-          <Link to="/home/transfer" message="Traspasa fondos de una cuenta a otra">
-            Transferir entre cuentas
-          </Link>
-          <Link to="/home/accounts" message="Configura tus cuentas">
-            Cuentas
-          </Link>
-          <Link to="/home/categories" message="Configura tus categorías">
-            Categorías
-          </Link>
-          <Link to="/home/stats" disabled message="Resumen por día, semana y mes">
-            Estadísticas
-          </Link>
-        </Container>
-      </FunctionContext.Provider>
-      <Footer>
-        <SignOutButton type="button" onClick={onSignOutClick}>
-          Cerrar sesión
-        </SignOutButton>
-        <div>
-          {`v${pkg.version}`}
-        </div>
-      </Footer>
-    </SideMenuWrapper>
-  </Fragment>
+const SideMenu = ({ username, onSignOutClick }) => (
+  <OpenMenuConsumer
+    render={(active, toggleMenu) => (
+      <Fragment>
+        <Overlay active={active} onClick={toggleMenu} />
+        <SideMenuWrapper active={active}>
+          <Avatar>
+            {`Hola ${username}`}
+          </Avatar>
+          <Container verticalPadding>
+            <Link to="/home" message="Balance e historial de actividades">
+              Movimientos
+            </Link>
+            <Link to="/home/add_founds" message="Registra tus ingresos">
+              Añadir fondos
+            </Link>
+            <Link to="/home/transfer" message="Traspasa fondos de una cuenta a otra">
+              Transferir entre cuentas
+            </Link>
+            <Link to="/home/accounts" message="Configura tus cuentas">
+              Cuentas
+            </Link>
+            <Link to="/home/categories" message="Configura tus categorías">
+              Categorías
+            </Link>
+            <Link to="/home/stats" disabled message="Resumen por día, semana y mes">
+              Estadísticas
+            </Link>
+          </Container>
+          <Footer>
+            <SignOutButton type="button" onClick={onSignOutClick}>
+              Cerrar sesión
+            </SignOutButton>
+            <div>
+              {`v${pkg.version}`}
+            </div>
+          </Footer>
+        </SideMenuWrapper>
+      </Fragment>
+    )}
+  />
 );
 
 

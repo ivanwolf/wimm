@@ -18,9 +18,13 @@ class Touchable extends Component {
 
   handleTouchStart() {
     const { disabled, onTouchSelect } = this.props;
-    this.timeout = setTimeout(() => {
+    if (disabled) {
       onTouchSelect();
-    }, 600);
+    } else {
+      this.timeout = setTimeout(() => {
+        onTouchSelect();
+      }, 600);
+    }
   }
 
   clearTimeout() {
@@ -48,6 +52,5 @@ Touchable.propTypes = {
   onTouchSelect: PropTypes.func.isRequired,
   children: PropTypes.node.isRequired,
 };
-
 
 export default Touchable;

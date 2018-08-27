@@ -3,8 +3,9 @@ import { Container } from '../../../components/Layout';
 import Drawer from '../../../components/Drawer';
 import AccountList from './accounts/AccountList';
 import Form from './accounts/NewAccountForm';
-import { SettingsAppBar } from '../../../components/AppBar';
+import { HomeAppBar } from '../../../components/AppBar';
 import { connect } from '../../../components/utils/Provider';
+import SelectItemProvider from '../../../components/utils/SelectItem';
 
 class SettingsAccounts extends Component {
   constructor(props) {
@@ -12,6 +13,7 @@ class SettingsAccounts extends Component {
     this.state = {
       openForm: false,
       loading: false,
+      selectedAccounts: [],
     };
     this.handleAccountToggle = this.handleAccountToggle.bind(this);
     this.handleNewAccount = this.handleNewAccount.bind(this);
@@ -48,24 +50,26 @@ class SettingsAccounts extends Component {
     const { accounts } = this.props;
     const { openForm, loading } = this.state;
     return (
-      <Container marginTop>
-        <SettingsAppBar
-          openForm={openForm}
-          toggleOpenForm={this.toggleOpenForm}
-          title="Cuentas"
-          formTitle="Agrega una cuenta"
-        />
-        <Drawer active={openForm}>
-          <Form
-            handleSubmit={this.handleNewAccount}
-            loading={loading}
+      <SelectItemProvider>
+        <Container marginTop noPadding>
+          <HomeAppBar
+            openForm={openForm}
+            toggleOpenForm={this.toggleOpenForm}
+            title="Cuentas"
+            formTitle="Agrega una cuenta"
           />
-        </Drawer>
-        <AccountList
-          accounts={accounts}
-          handleAccountToggle={this.handleAccountToggle}
-        />
-      </Container>
+          <Drawer active={openForm}>
+            <Form
+              handleSubmit={this.handleNewAccount}
+              loading={loading}
+            />
+          </Drawer>
+          <AccountList
+            accounts={accounts}
+            handleAccountToggle={this.handleAccountToggle}
+          />
+        </Container>
+      </SelectItemProvider>
     );
   }
 }

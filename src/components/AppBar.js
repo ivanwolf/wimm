@@ -5,6 +5,8 @@ import styled, { css } from 'styled-components';
 import Icon from './Icon';
 import colors from '../config/colors';
 import ScrollThreshold from './utils/ScrollThreshold';
+import { SelectItemConsumer } from './utils/SelectItem';
+import { OpenMenuConsumer } from './utils/OpenMenu';
 
 const AppBarWrapper = styled.div`
   display: flex;
@@ -81,11 +83,15 @@ const AppBarHOC = ({
   <ScrollThreshold
     limit={5}
     render={overThreshold => (
-      <AppBarWrapper solid={overThreshold}>
-        {renderLeft && renderLeft()}
-        {renderTitle && renderTitle()}
-        {renderRight && renderRight()}
-      </AppBarWrapper>
+      <OpenMenuConsumer
+        render={(open, toggleOpen) => (
+          <AppBarWrapper solid={overThreshold}>
+            {renderLeft && renderLeft(open, toggleOpen)}
+            {renderTitle && renderTitle()}
+            {renderRight && renderRight()}
+          </AppBarWrapper>
+        )}
+      />
     )}
   />
 );
@@ -100,43 +106,11 @@ AppBarHOC.propTypes = {
   renderRight: PropTypes.func,
 };
 
-export const SettingsAppBar = withRouter(({
-  openForm,
-  toggleOpenForm,
-  history,
-  title,
-  formTitle,
-}) => (
-  <AppBarHOC
-    renderLeft={() => (
-      <IconWrapper hidden={openForm} onClick={history.goBack}>
-        <Icon name="arrow_back" />
-      </IconWrapper>
-    )}
-    renderTitle={() => (
-      <Fragment>
-        <TitleWrapper hidden={openForm}>
-          {title}
-        </TitleWrapper>
-        <TitleWrapper hidden={!openForm}>
-          {formTitle}
-        </TitleWrapper>
-      </Fragment>
-    )}
-    renderRight={() => (
-      <IconWrapper right onClick={toggleOpenForm}>
-        <RotateIcon rotate={openForm} name="add" />
-      </IconWrapper>
-    )}
-  />
-));
-
 
 export const HomeAppBar = ({
   openForm,
   selectedActivitiesCount,
   toggleOpenForm,
-  toggleOpenMenu,
   clearSelectedActivities,
   handleDeleteActivities,
   handleEditActivity,
@@ -144,7 +118,7 @@ export const HomeAppBar = ({
   const editMode = selectedActivitiesCount > 0;
   return (
     <AppBarHOC
-      renderLeft={() => (
+      renderLeft={(open, toggleOpenMenu) => (
         <Fragment>
           <IconWrapper hidden={openForm || editMode} onClick={toggleOpenMenu}>
             <Icon name="menu" />

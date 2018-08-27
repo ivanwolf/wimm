@@ -21,13 +21,11 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      openMenu: false,
       openForm: false,
       places: [],
       placesLoading: false,
       selectedActivities: [],
     };
-    this.toggleOpenMenu = this.toggleOpenMenu.bind(this);
     this.toggleOpenForm = this.toggleOpenForm.bind(this);
     this.getPlacesOptions = this.getPlacesOptions.bind(this);
     this.handleSelectActivity = this.handleSelectActivity.bind(this);
@@ -67,12 +65,6 @@ class Home extends Component {
     } else {
       this.setState({ openForm: false });
     }
-  }
-
-  toggleOpenMenu() {
-    this.setState(state => ({
-      openMenu: !state.openMenu,
-    }));
   }
 
   clearSelectedActivities() {
@@ -118,7 +110,6 @@ class Home extends Component {
   render() {
     const {
       openForm,
-      openMenu,
       placesLoading,
       places,
       selectedActivities,
@@ -126,12 +117,7 @@ class Home extends Component {
     const { user } = this.props;
     return (
       <Page>
-        <SideMenu
-          active={openMenu}
-          onOverlayClick={this.toggleOpenMenu}
-          username={user.displayName}
-          onSignOutClick={signOut}
-        />
+        <SideMenu username={user.displayName} onSignOutClick={signOut} />
         <Switch>
           <Route path="/home/accounts" component={Accounts} />
           <Route path="/home/add_founds" component={AddFounds} />

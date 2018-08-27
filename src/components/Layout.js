@@ -37,6 +37,9 @@ export const Container = styled.div`
     padding-top: 0.7rem;
     padding-bottom: 0.7rem;
   `}
+  ${({ noPadding }) => noPadding && css`
+    padding: 0;
+  `}
 `;
 
 export const Col = styled.div`

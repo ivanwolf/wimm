@@ -8,6 +8,7 @@ import Setup from './pages/Setup';
 import Login from './pages/Login';
 import { UserProvider } from './hocs/userContext';
 import FirestoreProvider from './components/utils/Provider';
+import OpenMenuProvider from './components/utils/OpenMenu';
 
 class App extends Component {
   constructor(props) {
@@ -51,12 +52,14 @@ class App extends Component {
     return (
       <UserProvider value={user}>
         <FirestoreProvider user={user}>
-          <Switch>
-            <Route path="/setup" component={Setup} />
-            <Route path="/home" component={Home} />
-            <Route path="/login" component={Login} />
-            <Route path="/" component={Splash} />
-          </Switch>
+          <OpenMenuProvider>
+            <Switch>
+              <Route path="/setup" component={Setup} />
+              <Route path="/home" component={Home} />
+              <Route path="/login" component={Login} />
+              <Route path="/" component={Splash} />
+            </Switch>
+          </OpenMenuProvider>
         </FirestoreProvider>
       </UserProvider>
     );
