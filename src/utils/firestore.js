@@ -22,16 +22,32 @@ export const createInitialDocument = (user) => {
   });
 };
 
-const toArray = (query) => {
-  const docs = [];
-  query.forEach((doc) => {
-    docs.push({
-      id: doc.id,
-      ...doc.data(),
-    });
-  });
-  return docs;
-};
+/* LISTENERS */
+
+export const addListener = (user, collection, listener) => (
+  getUserDoc(user)
+    .collection(collection)
+    .onSnapshot({
+      includeMetadataChanges: true,
+    }, (querySnapshot) => {
+      const docs = [];
+      let type;
+      querySnapshot.docChanges().forEach((change) => {
+        type = change.type;
+        docs.push({
+          id: change.doc.id,
+          ...change.doc.data(),
+        });
+      });
+      if (docs.length > 0) {
+        listener({
+          type,
+          collection,
+          docs,
+        });
+      }
+    })
+);
 
 /* FETCH */
 
@@ -39,7 +55,6 @@ export const fetchCollection = (user, collection) => (
   getUserDoc(user)
     .collection(collection)
     .get()
-    .then(toArray)
 );
 
 /* CREATES */
@@ -48,9 +63,7 @@ export const createDocument = (user, collection, data) => (
   getUserDoc(user)
     .collection(collection)
     .add(data)
-    .then(docRef => docRef.get())
-    .then(snapshot => snapshot.data())
-)
+);
 
 /* UPDATES */
 
@@ -61,21 +74,21 @@ export const updateDocument = (user, collection, { id, ...data }) => (
     .update(data)
 );
 
-export const updateDocuments = async (user, collection, items) => (
-  items.forEach(async (item) => {
-    await updateDocument(user, collection, item);
+export const updateDocuments = async (user, collection, docs) => (
+  docs.forEach(async (doc) => {
+    await updateDocument(user, collection, doc);
   })
 );
 
 /* DELETES */
 
-export const deleteActivity = (user, activityId) => (
-  getUserDoc(user).collection('activities').doc(activityId).delete()
+export const deleteDocument = async (user, collection, id) => (
+  getUserDoc(user).collection(collection).doc(id).delete()
 );
 
-export const deleteActivities = async (user, ids) => (
-  ids.forEach(async (id) => {
-    await deleteActivity(user, id);
+export const deleteDocuments = async (user, collection, docs) => (
+  docs.forEach(async (doc) => {
+    await deleteDocument(user, collection, doc);
   })
 );
 

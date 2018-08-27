@@ -84,7 +84,7 @@ class AddFounds extends Component {
     const {
       sum, sumError, accountId, loading, detail,
     } = this.state;
-    const { accounts, waiting } = this.props;
+    const { accounts, accountsLoading } = this.props;
     return (
       <Fragment>
         <AppBar title="Añadir fondos" />
@@ -98,7 +98,7 @@ class AddFounds extends Component {
               value={accountId}
               onSelect={this.handleMethodChange}
               placeholder="Cuenta"
-              loading={waiting.accounts}
+              loading={accountsLoading}
             />
             <TextInput
               type="number"

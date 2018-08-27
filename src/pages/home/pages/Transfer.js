@@ -109,7 +109,7 @@ class Transfer extends Component {
     const {
       sum, sumError, fromId, toId, loading, detail,
     } = this.state;
-    const { accounts, waiting } = this.props;
+    const { accounts, accountsLoading } = this.props;
     return (
       <Fragment>
         <AppBar title="Transferir" />
@@ -123,14 +123,14 @@ class Transfer extends Component {
               value={fromId}
               onSelect={this.handleFromChange}
               placeholder="Origen"
-              loading={waiting.accounts}
+              loading={accountsLoading}
             />
             <Dropdown
               options={accounts.filter(acc => acc.id !== fromId)}
               value={toId}
               onSelect={this.handleToChange}
               placeholder="Destino"
-              loading={waiting.accounts}
+              loading={accountsLoading}
             />
             <TextInput
               type="number"

@@ -2,8 +2,10 @@ import React, { Component , createContext, Children } from 'react';
 import {
   createDocument,
   fetchCollection,
+  updateDocument,
   updateDocuments,
-  deleteActivities,
+  deleteDocuments,
+  addListener,
 } from '../../utils/firestore';
 
 
@@ -14,114 +16,84 @@ const StateContext = createContext({});
   with de data as an Object
 */
 
+const loadingKey = collection => `${collection}Loading`;
 
 class Provider extends Component {
   constructor(props) {
     super(props);
-    this.bindActionToState = this.bindActionToState.bind(this);
+    this.updateStore = this.updateStore.bind(this);
+    this.bindActionToCollection = this.bindActionToCollection.bind(this);
     /* Initial context value */
     this.state = {
-      collections: {
-        activities: [],
-        accounts: [],
-        categories: [],
-      },
-      waiting: {
-        activities: false,
-        accounts: false,
-        categories: false,
-      },
+      activities: [],
+      activitiesLoading: false,
+      accounts: [],
+      accountsLoading: false,
+      categories: [],
+      categoriesLoading: false,
     };
     this.actions = {
-      fetchActivities: this.bindActionToState('FETCH', 'activities', fetchCollection),
-      createActivity: this.bindActionToState('CREATE', 'activities', createDocument),
-      deleteActivities: this.bindActionToState('DELETE', 'activities', deleteActivities),
-      fetchAccounts: this.bindActionToState('FETCH', 'accounts', fetchCollection),
-      createAccount: this.bindActionToState('CREATE', 'accounts', createDocument),
-      updateAccounts: this.bindActionToState('UPDATE', 'accounts', updateDocuments),
-      fetchCategories: this.bindActionToState('FETCH', 'categories', fetchCollection),
-      updateCategories: this.bindActionToState('UPDATE', 'categories', updateDocuments),
+      fetchActivities: this.bindActionToCollection(fetchCollection, 'activities', true),
+      createActivity: this.bindActionToCollection(createDocument, 'activities'),
+      deleteActivities: this.bindActionToCollection(deleteDocuments, 'activities'),
+      fetchAccounts: this.bindActionToCollection(fetchCollection, 'accounts', true),
+      createAccount: this.bindActionToCollection(createDocument, 'accounts'),
+      updateAccount: this.bindActionToCollection(updateDocument, 'accounts'),
+      updateAccounts: this.bindActionToCollection(updateDocuments, 'accounts'),
+      fetchCategories: this.bindActionToCollection(fetchCollection, 'categories', true),
+      updateCategory: this.bindActionToCollection(updateDocument, 'categories'),
+      updateCategories: this.bindActionToCollection(updateDocuments, 'categories'),
     };
   }
 
-  updateLoading(collection, value) {
-    return this.setState(state => Object.assign({}, state, {
-      waiting: Object.assign({}, state.waiting, {
-        [collection]: value,
-      }),
-    }));
-  }
-
-  updateItems(collectionName, itemsData) {
-    const { collections } = this.state;
-    const collection = collections[collectionName].map((currentItem) => {
-      const dataToUpdate = itemsData.find(data => data.id === currentItem.id);
-      if (dataToUpdate) {
-        return Object.assign({}, currentItem, dataToUpdate);
-      }
-      return currentItem;
-    });
-    return this.setState(state => Object.assign({}, state, {
-      collections: Object.assign({}, state.collections, {
-        [collectionName]: collection,
-      }),
-    }));
-  }
-
-  deleteItems(collectionName, itemIds) {
-    const { collections } = this.state;
-    const collection = collections[collectionName].filter(item => !itemIds.includes(item.id))
-    return this.setState(state => Object.assign({}, state, {
-      collections: Object.assign({}, state.collections, {
-        [collectionName]: collection,
-      }),
-    }));
-  }
-
-  addItem(collectionName, itemData) {
-    return this.setState(state => Object.assign({}, state, {
-      collections: Object.assign({}, state.collections, {
-        [collectionName]: [itemData, ...state.collections[collectionName]],
-      }),
-    }));
-  }
-
-  addCollection(collectionName, data) {
-    return this.setState(state => Object.assign({}, state, {
-      collections: Object.assign({}, state.collections, {
-        [collectionName]: data,
-      }),
-    }));
-  }
-
-  bindActionToState(actionType, collectionName, firestoreAction) {
+  componentDidMount() {
     const { user } = this.props;
-    if (actionType === 'FETCH') {
-      return async () => {
-        await this.updateLoading(collectionName, true);
-        await this.addCollection(collectionName, await firestoreAction(user, collectionName));
-        await this.updateLoading(collectionName, false);
+    addListener(user, 'activities', this.updateStore);
+    addListener(user, 'accounts', this.updateStore);
+    addListener(user, 'categories', this.updateStore);
+  }
+
+  bindActionToCollection(action, collection, loadingFlag = false) {
+    const { user } = this.props;
+    if (loadingFlag) {
+      return async (data) => {
+        await this.setState({
+          [loadingKey(collection)]: true,
+        });  
+        return action(user, collection, data);
       };
     }
-    if (actionType === 'DELETE') {
-      return async (ids) => {
-        await firestoreAction(user, ids);
-        await this.deleteItems(collectionName, ids);
-      };
+    return data => action(user, collection, data);
+  }
+
+  updateStore(change) {
+    const docs = this.state[change.collection];
+    if (change.type === 'added') {
+      this.setState({
+        [change.collection]: [...change.docs, ...docs],
+        [loadingKey(change.collection)]: false,
+      });
     }
-    if (actionType === 'CREATE') {
-      return async data => this.addItem(
-        collectionName,
-        await firestoreAction(user, collectionName, data),
-      );
+
+    if (change.type === 'modified') {
+      this.setState({
+        [change.collection]: docs.map((currentDoc) => {
+          const updatedDoc = change.docs.find(doc => doc.id === currentDoc.id);
+          return updatedDoc || currentDoc;
+        }),
+        [loadingKey(change.collection)]: false,
+      });
     }
-    if (actionType === 'UPDATE') {
-      return async (items) => {
-        await firestoreAction(user, collectionName, items);
-        return this.updateItems(collectionName, items);
-      };
+
+    if (change.type === 'removed') {
+      const deletedIds = change.docs.map(doc => doc.id);
+      this.setState({
+        [change.collection]: docs.filter(doc => !deletedIds.includes(doc.id)),
+        [loadingKey(change.collection)]: false,
+      });
     }
   }
+
 
   render() {
     const value = Object.assign(this.state, {
@@ -144,29 +116,27 @@ const filterObject = (object, filter) => Object.keys(object).reduce((res, key) =
   return res;
 }, {});
 
-export const connect = (...requiredCollections) => (...requiredActions) => Target => props => (
-  <StateContext.Consumer>
-    {(context) => {
-      const collections = filterObject(
-        context.collections,
-        key => requiredCollections.includes(key),
-      );
-      const waiting = filterObject(
-        context.waiting,
-        key => requiredCollections.includes(key),
-      );
-      const actions = filterObject(
-        context.actions,
-        key => requiredActions.includes(key),
-      );
-      return (
-        <Target
-          {...props}
-          {...collections}
-          {...actions}
-          waiting={waiting}
-        />
-      );
-    }}
-  </StateContext.Consumer>
-);
+export const connect = (...requiredCollections) => {
+  const requiredLoadingKeys = requiredCollections.map(collection => loadingKey(collection));
+  return (...requiredActions) => Target => props => (
+    <StateContext.Consumer>
+      {(context) => {
+        const collections = filterObject(
+          context,
+          key => requiredCollections.includes(key) || requiredLoadingKeys.includes(key),
+        );
+        const actions = filterObject(
+          context.actions,
+          key => requiredActions.includes(key),
+        );
+        return (
+          <Target
+            {...props}
+            {...collections}
+            {...actions}
+          />
+        );
+      }}
+    </StateContext.Consumer>
+  );
+};

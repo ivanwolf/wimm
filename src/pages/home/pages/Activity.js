@@ -8,12 +8,13 @@ import { connect } from '../../../components/utils/Provider';
 
 const Activity = ({
   activities,
+  activitiesLoading,
   accounts,
-  waiting,
+  accountsLoading,
   selectedActivities,
   handleSelectActivity,
 }) => {
-  if (waiting.activities || waiting.accounts) {
+  if (activitiesLoading || accountsLoading) {
     return (
       <Container centerContent marginTop>
         <SpinnerTwo />

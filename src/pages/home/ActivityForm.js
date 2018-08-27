@@ -124,8 +124,9 @@ class ActivityForm extends Component {
       places,
       placesLoading,
       accounts,
+      accountsLoading,
       categories,
-      waiting,
+      categoriesLoading,
     } = this.props;
     return (
       <form onSubmit={this.handleSubmit}>
@@ -149,14 +150,14 @@ class ActivityForm extends Component {
             value={accountId}
             onSelect={this.handleMethodChange}
             placeholder="Cuenta"
-            loading={waiting.accounts}
+            loading={accountsLoading}
           />
           <Dropdown
             options={categories}
             value={categoryId}
             onSelect={this.handleLabelChange}
             placeholder="Categoría"
-            loading={waiting.categories}
+            loading={categoriesLoading}
           />
           <TextInput
             type="text"
