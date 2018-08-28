@@ -4,45 +4,42 @@ import { Switch, Route } from 'react-router-dom';
 import { signOut } from '../utils/session';
 import { Page } from '../components/Layout';
 import SideMenu from './home/Sidemenu';
-import withLocation from '../hocs/LocationState';
-import { connect } from '../components/utils/Provider';
+import withUser from '../hocs/userContext';
 import AddFounds from './home/pages/AddFounds';
 import Transfer from './home/pages/Transfer';
 import Accounts from './home/pages/Accounts';
 import Activities from './home/pages/Activities';
+import FirestoreProvider from '../components/utils/Provider';
+import OpenMenuProvider from '../components/utils/OpenMenu';
+import Splash from './Splash';
 
-class Home extends Component {
-  componentDidMount() {
-    const { fetchAccounts, fetchActivities, fetchCategories } = this.props;
-    fetchAccounts();
-    fetchActivities();
-    fetchCategories();
+const Home = ({ user }) => {
+  if (user === null) {
+    return <Splash />;
   }
-
-  render() {
-    return (
-      <Page>
-        <SideMenu onSignOutClick={signOut} />
-        <Switch>
-          <Route path="/home/accounts" component={Accounts} />
-          <Route path="/home/add_founds" component={AddFounds} />
-          <Route path="/home/transfer" component={Transfer} />
-          <Route path="/home" component={Activities} />
-        </Switch>
-      </Page>
-    );
-  }
+  return (
+    <FirestoreProvider>
+      <OpenMenuProvider>
+        <Page>
+          <SideMenu onSignOutClick={signOut} />
+          <Switch>
+            <Route path="/home/accounts" component={Accounts} />
+            <Route path="/home/add_founds" component={AddFounds} />
+            <Route path="/home/transfer" component={Transfer} />
+            <Route path="/home" component={Activities} />
+          </Switch>
+        </Page>
+      </OpenMenuProvider>
+    </FirestoreProvider>
+  );
 }
 
-
-Home.propTypes = {
-  fetchActivities: PropTypes.func.isRequired,
-  fetchAccounts: PropTypes.func.isRequired,
-  fetchCategories: PropTypes.func.isRequired,
+Home.defaultProps = {
+  user: null,
 };
 
-export default connect()(
-  'fetchActivities',
-  'fetchAccounts',
-  'fetchCategories',
-)(withLocation(Home));
+Home.propTypes = {
+  user: PropTypes.object,
+};
+
+export default withUser(Home);

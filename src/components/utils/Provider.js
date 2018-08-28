@@ -7,6 +7,7 @@ import {
   deleteDocuments,
   addListener,
 } from '../../utils/firestore';
+import withUser from '../../hocs/userContext';
 
 
 const StateContext = createContext({});
@@ -66,7 +67,7 @@ class Provider extends Component {
       return async (data) => {
         await this.setState({
           [loadingKey(collection)]: true,
-        });  
+        });
         return action(user, collection, data);
       };
     }
@@ -75,6 +76,11 @@ class Provider extends Component {
 
   updateStore(change) {
     const docs = this.state[change.collection];
+    if (change.type === 'load') {
+      this.setState({
+        [loadingKey(change.collection)]: false,
+      });
+    }
     if (change.type === 'added') {
       const sortedDocs = [...change.docs, ...docs].sort((a, b) => (
         a[sortBy(change.collection)] < b[sortBy(change.collection)]
@@ -117,7 +123,7 @@ class Provider extends Component {
   }
 }
 
-export default Provider;
+export default withUser(Provider);
 
 const filterObject = (object, filter) => Object.keys(object).reduce((res, key) => {
   if (filter(key)) {

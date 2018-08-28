@@ -16,6 +16,13 @@ class Activities extends Component {
     this.handleDeleteActivities = this.handleDeleteActivities.bind(this);
   }
 
+  componentDidMount() {
+    const { fetchAccounts, fetchActivities, fetchCategories } = this.props;
+    fetchActivities();
+    fetchAccounts();
+    fetchCategories();
+  }
+
   async handleDeleteActivities(selectedActivities) {
     const {
       activities,
@@ -73,6 +80,9 @@ export default connect(
   'accounts',
   'categories',
 )(
+  'fetchActivities',
+  'fetchAccounts',
+  'fetchCategories',
   'deleteActivities',
   'updateAccounts',
   'updateCategories',

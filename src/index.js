@@ -16,27 +16,42 @@ const config = {
   messagingSenderId: '755630054891',
 };
 
-firebase.initializeApp(config);
-
-registerServiceWorker();
-
-const Login = Loadable({
-  loader: () => import('./pages/Login'),
-  loading: Splash,
-})
+// registerServiceWorker();
 
 const App = Loadable({
   loader: () => import('./App'),
   loading: Splash,
-})
+});
 
-const renderApp = () => {
+const renderApp = (user) => {
   ReactDOM.render(
     <BrowserRouter>
-      <App />
+      <App user={user} />
     </BrowserRouter>,
     document.getElementById('root'),
   );
 };
 
-renderApp();
+const renderSplash = () => {
+  ReactDOM.render(
+    <Splash />,
+    document.getElementById('root'),
+  )
+}
+
+renderSplash();
+
+firebase.initializeApp(config);
+
+firebase.auth().onAuthStateChanged((user) => {
+  if (user) {
+    renderApp(user);
+  } else {
+    renderApp(null)
+  }
+});
+
+
+
+
+

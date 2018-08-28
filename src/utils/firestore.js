@@ -31,7 +31,7 @@ export const addListener = (user, collection, listener) => (
       includeMetadataChanges: true,
     }, (querySnapshot) => {
       const docs = [];
-      let type;
+      let type = 'load';
       querySnapshot.docChanges().forEach((change) => {
         type = change.type;
         docs.push({
@@ -39,13 +39,11 @@ export const addListener = (user, collection, listener) => (
           ...change.doc.data(),
         });
       });
-      if (docs.length > 0) {
-        listener({
-          type,
-          collection,
-          docs,
-        });
-      }
+      listener({
+        type,
+        collection,
+        docs,
+      });
     })
 );
 
@@ -55,6 +53,7 @@ export const fetchCollection = (user, collection) => (
   getUserDoc(user)
     .collection(collection)
     .get()
+    .catch(err => console.log(err))
 );
 
 /* CREATES */
