@@ -149,7 +149,7 @@ const SideMenu = ({ user, onSignOutClick }) => (
             <Link to="/home/accounts" message="Configura tus cuentas">
               Cuentas
             </Link>
-            <Link to="/home/categories" message="Configura tus categorías">
+            <Link to="/home/categories" disabled message="Configura tus categorías">
               Categorías
             </Link>
             <Link to="/home/stats" disabled message="Resumen por día, semana y mes">
