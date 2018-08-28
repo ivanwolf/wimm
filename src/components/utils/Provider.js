@@ -18,6 +18,12 @@ const StateContext = createContext({});
 
 const loadingKey = collection => `${collection}Loading`;
 
+const sortBy = (collection) => {
+  if (collection === 'activities') return 'createdAt';
+  if (collection === 'accounts' || collection === 'categories') return 'activityCount'
+  return 'id';
+};
+
 class Provider extends Component {
   constructor(props) {
     super(props);
@@ -70,8 +76,11 @@ class Provider extends Component {
   updateStore(change) {
     const docs = this.state[change.collection];
     if (change.type === 'added') {
+      const sortedDocs = [...change.docs, ...docs].sort((a, b) => (
+        a[sortBy(change.collection)] < b[sortBy(change.collection)]
+      ));
       this.setState({
-        [change.collection]: [...change.docs, ...docs],
+        [change.collection]: sortedDocs,
         [loadingKey(change.collection)]: false,
       });
     }

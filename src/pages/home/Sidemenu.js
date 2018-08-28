@@ -173,7 +173,7 @@ const SideMenu = ({ user, onSignOutClick }) => (
 
 SideMenu.propTypes = {
   onSignOutClick: PropTypes.func.isRequired,
-  username: PropTypes.string.isRequired,
+  user: PropTypes.object.isRequired,
 };
 
 export default withUser(SideMenu);

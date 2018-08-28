@@ -169,10 +169,8 @@ const optionsTypes = PropTypes.arrayOf(PropTypes.shape({
 }));
 
 ActivityForm.propTypes = {
-  places: optionsTypes.isRequired,
   accounts: optionsTypes.isRequired,
   categories: optionsTypes.isRequired,
-  placesLoading: PropTypes.bool.isRequired,
   toggleOpenForm: PropTypes.func.isRequired,
 };
 

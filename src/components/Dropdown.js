@@ -108,7 +108,11 @@ class DropdownHOC extends Component {
     const {
       value, options, error, placeholder, renderIcon, loading,
     } = this.props;
-    const currentOption = options.find(opt => opt.id === value);
+    const filteredOptions = options.filter((option) => {
+      if (option.active !== undefined) return option.active;
+      return true;
+    });
+    const currentOption = filteredOptions.find(opt => opt.id === value);
     return (
       <DropdownWrapper>
         <DropdownInput
@@ -123,8 +127,8 @@ class DropdownHOC extends Component {
         <IconWrapper loading={loading} onClick={this.toggleOpenMenu}>
           {loading ? <SpinnerTwo /> : renderIcon(isOpen)}
         </IconWrapper>
-        <MenuWrapper active={isOpen} optionsCount={options.length}>
-          {options.map(opt => (
+        <MenuWrapper active={isOpen} optionsCount={filteredOptions.length}>
+          {filteredOptions.map(opt => (
             <MenuItem
               key={opt.id}
               onClick={this.handleItemClick(opt.id)}

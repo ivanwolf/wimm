@@ -26,11 +26,10 @@ export const ActivityWrapper = Card.extend`
 
 
 const BaseCard = ({
-  onClick, selected, editMode, color, renderLeft, renderRight,
+  selected, editMode, color, renderLeft, renderRight,
 }) => (
   <ActivityWrapper
     selected={selected}
-    onClick={onClick}
     editMode={editMode}
     color={color}
   >
@@ -44,7 +43,6 @@ const BaseCard = ({
 );
 
 BaseCard.propTypes = {
-  onClick: PropTypes.func.isRequired,
   selected: PropTypes.bool.isRequired,
   editMode: PropTypes.bool.isRequired,
   renderLeft: PropTypes.func.isRequired,
@@ -168,10 +166,6 @@ const ActivityCard = ({ activity, ...props }) => {
     return <TransferCard activity={activity} {...props} />;
   }
   return null;
-};
-
-ActivityCard.propTypes = {
-  onClick: PropTypes.func.isRequired,
 };
 
 export default ActivityCard;

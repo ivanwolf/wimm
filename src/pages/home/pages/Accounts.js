@@ -27,6 +27,7 @@ class SettingsAccounts extends Component {
       balance,
       active: true,
       activityCount: 0,
+      createdAt: Date.now(),
     };
     await createAccount(account);
     await this.setState({ loading: false });
