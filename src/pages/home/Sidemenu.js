@@ -7,6 +7,7 @@ import { CleanButton } from '../../components/Input';
 import colors from '../../config/colors';
 import pkg from '../../../package.json';
 import { OpenMenuConsumer } from '../../components/utils/OpenMenu';
+import withUser from '../../hocs/userContext';
 
 const SideMenuWrapper = styled.div`
   position: fixed;
@@ -99,7 +100,7 @@ const SignOutButton = CleanButton.extend`
 `;
 
 
-const InnerLink = ({
+const Link = withRouter(({
   history, to, location, children, message, disabled
 }) => (
   <OpenMenuConsumer
@@ -123,18 +124,17 @@ const InnerLink = ({
       </Fragment>
     )}
   />
-);
+));
 
-const Link = withRouter(InnerLink);
 
-const SideMenu = ({ username, onSignOutClick }) => (
+const SideMenu = ({ user, onSignOutClick }) => (
   <OpenMenuConsumer
     render={(active, toggleMenu) => (
       <Fragment>
         <Overlay active={active} onClick={toggleMenu} />
         <SideMenuWrapper active={active}>
           <Avatar>
-            {`Hola ${username}`}
+            {`Hola ${user.displayName}`}
           </Avatar>
           <Container verticalPadding>
             <Link to="/home" message="Balance e historial de actividades">
@@ -172,10 +172,8 @@ const SideMenu = ({ username, onSignOutClick }) => (
 
 
 SideMenu.propTypes = {
-  active: PropTypes.bool.isRequired,
   onSignOutClick: PropTypes.func.isRequired,
-  onOverlayClick: PropTypes.func.isRequired,
   username: PropTypes.string.isRequired,
 };
 
-export default SideMenu;
+export default withUser(SideMenu);

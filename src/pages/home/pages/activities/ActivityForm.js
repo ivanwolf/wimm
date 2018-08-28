@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { Col } from '../../components/Layout';
-import { TextInput, Button } from '../../components/Input';
-import { Dropdown, LocationDropdown } from '../../components/Dropdown';
-import { connect } from '../../components/utils/Provider';
+import { Col } from '../../../../components/Layout';
+import { TextInput, Button } from '../../../../components/Input';
+import { Dropdown, LocationDropdown } from '../../../../components/Dropdown';
+import { connect } from '../../../../components/utils/Provider';
 
 
 class ActivityForm extends Component {
@@ -31,13 +31,12 @@ class ActivityForm extends Component {
     await this.setState({ submitting: true });
     try {
       const {
-        sum, placeId, accountId, categoryId, detail,
+        sum, accountId, categoryId, detail,
       } = this.state;
       const {
-        places, accounts, categories, createActivity, updateAccounts, updateCategories, toggleOpenForm,
+        accounts, categories, createActivity, updateAccounts, updateCategories, toggleOpenForm,
       } = this.props;
 
-      const place = places.find(pl => pl.id === placeId);
       const account = accounts.find(me => me.id === accountId);
       const category = categories.find(la => la.id === categoryId);
 
@@ -53,10 +52,6 @@ class ActivityForm extends Component {
           id: categoryId,
           name: category.name,
           color: category.color,
-        },
-        place: {
-          id: placeId,
-          name: place.name,
         },
         detail,
       };
@@ -80,12 +75,11 @@ class ActivityForm extends Component {
 
       // Clear state
       await this.setState({
-        submitting: false,  
+        submitting: false,
         sum: '',
         accountId: '',
         categoryId: '',
         detail: '',
-        placeId: '',
         sumError: '',
       });
 
@@ -118,11 +112,9 @@ class ActivityForm extends Component {
 
   render() {
     const {
-      sum, sumError, accountId, categoryId, detail, placeId, submitting,
+      sum, sumError, accountId, categoryId, detail, submitting,
     } = this.state;
     const {
-      places,
-      placesLoading,
       accounts,
       accountsLoading,
       categories,
@@ -137,13 +129,6 @@ class ActivityForm extends Component {
             onChange={this.handleSumChange}
             error={sumError}
             placeholder="Monto (CLP)"
-          />
-          <LocationDropdown
-            options={places}
-            value={placeId}
-            onSelect={this.handlePlaceChange}
-            placeholder="Lugar"
-            loading={placesLoading}
           />
           <Dropdown
             options={accounts}

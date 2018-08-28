@@ -4,11 +4,9 @@ import { css } from 'styled-components';
 import { Col } from '../../../../components/Layout';
 import { formatSum } from '../../../../utils/format';
 import {
-  Card, CardHeader, CardItem, WhiteCard,
+  Card, CardHeader, CardItem,
 } from '../../../../components/Card';
-import Touchable from '../../../../components/Touchable';
 import Icon from '../../../../components/Icon';
-import ScrollState from '../../../../components/utils/ScrollState';
 import colors from '../../../../config/colors';
 
 
@@ -91,7 +89,7 @@ const IncomeCard = ({ activity, ...props }) => {
 const ExpenseCard = ({ activity, ...props }) => {
   const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
   const {
-    category, place, detail, sum, account,
+    category, detail, sum, account,
   } = activity;
   return (
     <BaseCard
@@ -104,9 +102,6 @@ const ExpenseCard = ({ activity, ...props }) => {
           </CardHeader>
           <CardItem>
             {`${date}`}
-          </CardItem>
-          <CardItem>
-            {`${place.name}`}
           </CardItem>
           <CardItem>
             {detail}
@@ -160,7 +155,7 @@ const TransferCard = ({ activity, ...props }) => {
       )}
     />
   );
-}
+};
 
 const ActivityCard = ({ activity, ...props }) => {
   if (activity.type === 'income') {
@@ -179,46 +174,4 @@ ActivityCard.propTypes = {
   onClick: PropTypes.func.isRequired,
 };
 
-const ActivityList = ({
-  activities,
-  selectedActivities,
-  handleSelectActivity,
-}) => {
-  const editMode = selectedActivities.length > 0;
-  const selectActivity = id => () => handleSelectActivity(id);
-  return (
-    <Fragment>
-      <div>
-        <WhiteCard>
-          Movimientos
-        </WhiteCard>
-      </div>
-      <ScrollState
-        render={isScrolling => (
-          activities.map(act => (
-            <Touchable
-              key={act.id}
-              disabled={editMode || isScrolling}
-              onTouchSelect={selectActivity(act.id)}
-            >
-              <ActivityCard
-                editMode={editMode}
-                selected={selectedActivities.includes(act.id)}
-                activity={act}
-              />
-            </Touchable>
-          ))
-        )}
-      />
-    </Fragment>
-  );
-};
-
-
-ActivityList.propTypes = {
-  activities: PropTypes.array.isRequired,
-  selectedActivities: PropTypes.arrayOf(PropTypes.string).isRequired,
-  handleSelectActivity: PropTypes.func.isRequired,
-};
-
-export default ActivityList;
+export default ActivityCard;

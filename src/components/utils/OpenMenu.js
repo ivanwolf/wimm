@@ -1,6 +1,9 @@
 import React, { createContext, Component, Children } from 'react';
 
-const OpenMenuContext = createContext(false);
+const OpenMenuContext = createContext({
+  open: false,
+  toggleOpenMenu: () => {},
+});
 
 class OpenMenuProvider extends Component {
   constructor(props) {

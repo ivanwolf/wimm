@@ -109,64 +109,66 @@ AppBarHOC.propTypes = {
 
 export const HomeAppBar = ({
   openForm,
-  selectedActivitiesCount,
   toggleOpenForm,
-  clearSelectedActivities,
-  handleDeleteActivities,
-  handleEditActivity,
-}) => {
-  const editMode = selectedActivitiesCount > 0;
-  return (
-    <AppBarHOC
-      renderLeft={(open, toggleOpenMenu) => (
-        <Fragment>
-          <IconWrapper hidden={openForm || editMode} onClick={toggleOpenMenu}>
-            <Icon name="menu" />
-          </IconWrapper>
-          <IconWrapper hidden={!editMode} onClick={clearSelectedActivities}>
-            <Icon name="arrow_back" />
-          </IconWrapper>
-        </Fragment>
-      )}
-      renderTitle={() => (
-        <Fragment>
-          <TitleWrapper main hidden={editMode || openForm}>
-            MangoApp
-          </TitleWrapper>
-          <TitleWrapper hidden={editMode || !openForm}>
-            Agregar movimiento
-          </TitleWrapper>
-        </Fragment>
-      )}
-      renderRight={() => (
-        <Fragment>
-          <IconWrapper right hidden={editMode} onClick={toggleOpenForm}>
-            <RotateIcon rotate={openForm} name="add" />
-          </IconWrapper>
-          <IconWrapper right hidden={!editMode} onClick={handleDeleteActivities}>
-            <Icon name="delete" />
-          </IconWrapper>
-          <IconWrapper
-            rightSecond
-            hidden={!editMode || selectedActivitiesCount > 1}
-            onClick={handleEditActivity}
-          >
-            <Icon name="edit" />
-          </IconWrapper>
-        </Fragment>
-      )}
-    />
-  );
+  handleDeleteItems,
+  handleEditItem,
+  main,
+  title,
+  formTitle,
+}) => (
+  <SelectItemConsumer render={(items, selectItem, clearSelections) => (
+    <OpenMenuConsumer render={(openMenu, toggleOpenMenu) => (
+      <AppBarWrapper>
+        <IconWrapper hidden={openForm || items.length > 0} onClick={toggleOpenMenu}>
+          <Icon name="menu" />
+        </IconWrapper>
+        <IconWrapper hidden={items.length === 0} onClick={clearSelections}>
+          <Icon name="arrow_back" />
+        </IconWrapper>
+        <TitleWrapper main={main} hidden={items.length > 0 || openForm}>
+          {main ? 'MangoApp' : title}
+        </TitleWrapper>
+        <TitleWrapper hidden={items.length > 0 || !openForm}>
+          {formTitle}
+        </TitleWrapper>
+        <IconWrapper right hidden={items.length > 0} onClick={toggleOpenForm}>
+          <RotateIcon rotate={openForm} name="add" />
+        </IconWrapper>
+        <IconWrapper
+          right
+          hidden={items.length === 0}
+          onClick={async () => {
+            await handleDeleteItems(items);
+            clearSelections();
+          }}
+        >
+          <Icon name="delete" />
+        </IconWrapper>
+        <IconWrapper
+          rightSecond
+          hidden={items.length !== 1}
+          onClick={handleEditItem}
+        >
+          <Icon name="edit" />
+        </IconWrapper>
+      </AppBarWrapper>
+    )} />
+  )} />
+);
+
+HomeAppBar.defaultProps = {
+  main: false,
+  title: '',
 };
 
 HomeAppBar.propTypes = {
+  main: PropTypes.bool,
+  title: PropTypes.string,
+  formTitle: PropTypes.string.isRequired,
   openForm: PropTypes.bool.isRequired,
-  selectedActivitiesCount: PropTypes.number.isRequired,
   toggleOpenForm: PropTypes.func.isRequired,
-  toggleOpenMenu: PropTypes.func.isRequired,
-  clearSelectedActivities: PropTypes.func.isRequired,
-  handleDeleteActivities: PropTypes.func.isRequired,
-  handleEditActivity: PropTypes.func.isRequired,
+  handleDeleteItems: PropTypes.func.isRequired,
+  handleEditItem: PropTypes.func.isRequired,
 };
 
 
