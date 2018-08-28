@@ -40,6 +40,7 @@ class Provider extends Component {
       createAccount: this.bindActionToCollection(createDocument, 'accounts'),
       updateAccount: this.bindActionToCollection(updateDocument, 'accounts'),
       updateAccounts: this.bindActionToCollection(updateDocuments, 'accounts'),
+      deleteAccounts: this.bindActionToCollection(deleteDocuments, 'accounts'),
       fetchCategories: this.bindActionToCollection(fetchCollection, 'categories', true),
       updateCategory: this.bindActionToCollection(updateDocument, 'categories'),
       updateCategories: this.bindActionToCollection(updateDocuments, 'categories'),

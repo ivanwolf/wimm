@@ -16,10 +16,11 @@ class SettingsAccounts extends Component {
     };
     this.handleAccountToggle = this.handleAccountToggle.bind(this);
     this.handleNewAccount = this.handleNewAccount.bind(this);
+    this.handleDeleteAccounts = this.handleDeleteAccounts.bind(this);
   }
 
   async handleNewAccount(name, balance) {
-    const { createAccount } = this.props;
+    const { createAccount, toggleOpenForm } = this.props;
     await this.setState({ loading: true });
     const account = {
       name,
@@ -28,7 +29,17 @@ class SettingsAccounts extends Component {
       activityCount: 0,
     };
     await createAccount(account);
-    await this.setState({ loading: false, openForm: false });
+    await this.setState({ loading: false });
+    await toggleOpenForm();
+  }
+
+  async handleDeleteAccounts(selectedAccounts) {
+    const { deleteAccounts } = this.props;
+    try {
+      await deleteAccounts(selectedAccounts);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   async handleAccountToggle(accountId, active) {
@@ -46,10 +57,11 @@ class SettingsAccounts extends Component {
       <SelectItemProvider>
         <Container marginTop noPadding>
           <HomeAppBar
-            openForm={openForm}
-            toggleOpenForm={toggleOpenForm}
             title="Cuentas"
             formTitle="Agrega una cuenta"
+            openForm={openForm}
+            toggleOpenForm={toggleOpenForm}
+            handleDeleteItems={this.handleDeleteAccounts}
           />
           <Drawer active={openForm}>
             <Form
@@ -73,4 +85,5 @@ export default connect(
 )(
   'createAccount',
   'updateAccounts',
+  'deleteAccounts',
 )(withOpenFormState(SettingsAccounts));
