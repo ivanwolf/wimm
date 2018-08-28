@@ -20,7 +20,7 @@ class SettingsAccounts extends Component {
   }
 
   async handleNewAccount(name, balance) {
-    const { createAccount, toggleOpenForm } = this.props;
+    const { createAccount, toggleOpenForm, createActivity } = this.props;
     await this.setState({ loading: true });
     const account = {
       name,
@@ -29,7 +29,17 @@ class SettingsAccounts extends Component {
       activityCount: 0,
       createdAt: Date.now(),
     };
-    await createAccount(account);
+    const accountId = await createAccount(account);
+    const activity = {
+      createdAt: Date.now(),
+      sum: parseInt(balance, 10),
+      type: 'create',
+      account: {
+        id: accountId,
+        name,
+      },
+    };
+    await createActivity(activity);
     await this.setState({ loading: false });
     await toggleOpenForm();
   }
@@ -85,6 +95,7 @@ export default connect(
   'accounts',
 )(
   'createAccount',
+  'createActivity',
   'updateAccounts',
   'deleteAccounts',
 )(withOpenFormState(SettingsAccounts));

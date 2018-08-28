@@ -63,6 +63,7 @@ export const createDocument = (user, collection, data) => (
   getUserDoc(user)
     .collection(collection)
     .add(data)
+    .then(docRef => docRef.id)
 );
 
 /* UPDATES */

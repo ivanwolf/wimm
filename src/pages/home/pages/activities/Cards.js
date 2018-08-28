@@ -155,6 +155,36 @@ const TransferCard = ({ activity, ...props }) => {
   );
 };
 
+const CreateCard = ({ activity, ...props }) => {
+  const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  return (
+    <BaseCard
+      {...props}
+      color={colors.green}
+      renderLeft={() => (
+        <Fragment>
+          <CardHeader color={colors.green}>
+            Nueva cuenta
+          </CardHeader>
+          <CardItem>
+            {`${date}`}
+          </CardItem>
+        </Fragment>
+      )}
+      renderRight={() => (
+        <Fragment>
+          <CardHeader color={colors.green}>
+            {`$${formatSum(activity.sum)}`}
+          </CardHeader>
+          <CardItem>
+            {activity.account.name}
+          </CardItem>
+        </Fragment>
+      )}
+    />
+  );
+}
+
 const ActivityCard = ({ activity, ...props }) => {
   if (activity.type === 'income') {
     return <IncomeCard activity={activity} {...props} />;
@@ -164,6 +194,9 @@ const ActivityCard = ({ activity, ...props }) => {
   }
   if (activity.type === 'transfer') {
     return <TransferCard activity={activity} {...props} />;
+  }
+  if (activity.type === 'create') {
+    return <CreateCard activity={activity} {...props} />;
   }
   return null;
 };
