@@ -10,25 +10,27 @@ import { UserProvider } from './hocs/userContext';
 
 class App extends Component {
   componentDidMount() {
-    if (this.props.user === null) {
-      this.props.history.replace('/login');
-    }
+    this.handleRedirect();
   }
 
   componentDidUpdate(prevProps) {
+    if (prevProps.user !== this.props.user) {
+      this.handleRedirect();
+    }
+  }
+
+  handleRedirect() {
     const { history, user } = this.props;
-    if (prevProps.user !== user) {
-      if (user) {
-        getUserDoc(user).get().then((doc) => {
-          if (doc.exists) {
-            history.replace('/home');
-          } else {
-            history.replace('/setup');
-          }
-        });
-      } else {
-        history.replace('/login');
-      }
+    if (user) {
+      getUserDoc(user).get().then((doc) => {
+        if (doc.exists) {
+          history.replace('/home');
+        } else {
+          history.replace('/setup');
+        }
+      });
+    } else {
+      history.replace('/login');
     }
   }
 
