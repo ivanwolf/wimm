@@ -22,7 +22,7 @@ export const Card = styled.div`
   padding: 0.65rem;
   border-radius: 3px;
   display: flex;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.5rem;
   border-left: 6px solid ${colors.violetteDark};
   color: ${colors.gray}
   background-color: ${colors.grayLighter};

@@ -1,6 +1,5 @@
-import React, { Fragment } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
-import { WhiteCard } from '../../../../components/Card';
 import ScrollState from '../../../../components/utils/ScrollState';
 import Touchable from '../../../../components/Touchable';
 import ActivityCard from './Cards';
@@ -11,44 +10,41 @@ import { Container } from '../../../../components/Layout';
 
 const ActivityList = ({ activities, loading }) => (
   <SelectItemConsumer
-    render={(selectedActivities, handleSelectActivity) => (
-      <Fragment>
-        <div>
-          <WhiteCard>
-            Movimientos
-          </WhiteCard>
-        </div>
-        {loading ? (
+    render={(selectedActivities, handleSelectActivity) => {
+      if (loading) {
+        return (
           <Container centerContent>
             <SpinnerTwo />
           </Container>
-        ) : (
-          <ScrollState
-            render={isScrolling => (
-              activities.map(act => (
-                <Touchable
-                  key={act.id}
-                  disabled={selectedActivities.length > 0 || isScrolling}
-                  onTouchSelect={() => handleSelectActivity(act.id)}
-                >
-                  <ActivityCard
-                    editMode={selectedActivities.length > 0}
-                    selected={selectedActivities.includes(act.id)}
-                    activity={act}
-                  />
-                </Touchable>
-              ))
-            )}
-          />
-        )}
-      </Fragment>
-    )}
+        );
+      }
+      return (
+        <ScrollState
+          render={isScrolling => (
+            activities.map(act => (
+              <Touchable
+                key={act.id}
+                disabled={selectedActivities.length > 0 || isScrolling}
+                onTouchSelect={() => handleSelectActivity(act.id)}
+              >
+                <ActivityCard
+                  editMode={selectedActivities.length > 0}
+                  selected={selectedActivities.includes(act.id)}
+                  activity={act}
+                />
+              </Touchable>
+            ))
+          )}
+        />
+      );
+    }}
   />
 );
 
 
 ActivityList.propTypes = {
   activities: PropTypes.array.isRequired,
+  loading: PropTypes.bool.isRequired,
 };
 
 export default ActivityList;

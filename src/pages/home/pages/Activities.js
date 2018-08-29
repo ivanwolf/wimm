@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { HomeAppBar } from '../../../components/AppBar';
 import { connect } from '../../../components/utils/Provider';
 import SelectItemProvider from '../../../components/utils/SelectItem';
@@ -7,8 +7,9 @@ import Drawer from '../../../components/Drawer';
 import withOpenFormState from '../../../hocs/OpenFormState';
 import ActivityForm from './activities/ActivityForm';
 import Summary from './activities/Summary';
+import Badge from '../../../components/Badge';
 import ActivityList from './activities/ActivityList';
-import { accountsToUpdate, categoriesToUpdate } from '../../../utils/lambda';
+import { accountsToUpdate, categoriesToUpdate, activitiesByDay, dateLabel } from '../../../utils/lambda';
 
 class Activities extends Component {
   constructor(props) {
@@ -53,6 +54,7 @@ class Activities extends Component {
       openForm,
       toggleOpenForm
     } = this.props;
+    const activitiesList = activitiesByDay(activities);
     return (
       <SelectItemProvider>
         <Container marginTop>
@@ -68,7 +70,15 @@ class Activities extends Component {
             handleEditItem={() => {}}
           />
           <Summary accounts={accounts} loading={accountsLoading} />
-          <ActivityList activities={activities} loading={activitiesLoading} />
+          {Object.keys(activitiesList).map(key => (
+            <Fragment>
+              <Badge>
+                {dateLabel(parseInt(key, 10))}
+              </Badge>
+              <ActivityList activities={activitiesList[key]} />
+            </Fragment>
+
+          ))}
         </Container>
       </SelectItemProvider>
     );

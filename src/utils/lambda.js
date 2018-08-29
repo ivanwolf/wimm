@@ -60,3 +60,60 @@ export const categoriesToUpdate = (activitiesToDelete, categories) => categories
       activityCount: cat.activityCount - activityCount,
     };
   });
+
+export const activitiesByDay = activities => activities.reduce((res, act) => {
+  const activityDate = new Date(act.createdAt);
+  const timeDiff = Math.abs(Date.now() - activityDate.getTime());
+  const diffDays = Math.floor(timeDiff / (1000 * 3600 * 24));
+  if (res[diffDays]) {
+    res[diffDays] = [...res[diffDays], act];
+  } else {
+    res[diffDays] = [act];
+  }
+  return res;
+}, {});
+
+const dayName = [
+  'Domingo',
+  'Lunes',
+  'Martes',
+  'Miércoles',
+  'Jueves',
+  'Viernes',
+  'Sábado',
+];
+
+const monthNAmes = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
+
+const formatDate = (date) => {
+  const day = date.getDate();
+  const index = date.getMonth();
+  const year = date.getFullYear();
+  return `${day} de ${monthNAmes[index]} ${year}`;
+};
+
+const oneDay = 1000 * 3600 * 24;
+
+export const dateLabel = (key) => {
+  if (key === 0) return 'Hoy';
+  if (key === 1) return 'Ayer';
+  const today = Date.now();
+  const date = new Date(today - oneDay * key);
+  if (key >= 2 && key < 5) {
+    return dayName[date.getDay()];
+  }
+  return formatDate(date);
+};
