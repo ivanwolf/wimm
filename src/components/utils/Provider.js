@@ -63,19 +63,20 @@ class Provider extends Component {
 
   bindActionToCollection(action, collection, loadingFlag = false) {
     const { user } = this.props;
-    if (loadingFlag) {
-      return async (data) => {
-        await this.setState({
-          [loadingKey(collection)]: true,
-        });
-        return action(user, collection, data);
-      };
-    }
+    // if (loadingFlag) {
+    //   return async (data) => {
+    //     await this.setState({
+    //       [loadingKey(collection)]: true,
+    //     });
+    //     return action(user, collection, data);
+    //   };
+    // }
     return data => action(user, collection, data);
   }
 
   updateStore(change) {
     const docs = this.state[change.collection];
+    console.log('Entramos', change);
     if (change.type === 'load') {
       this.setState({
         [loadingKey(change.collection)]: false,
