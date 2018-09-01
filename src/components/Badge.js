@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import colors from '../config/colors';
 
 const Block = styled.div`
-  display: block;
+  display: flex;
   padding: 0 0.65rem;
   margin-bottom: 0.5rem;
 `;
@@ -24,13 +24,20 @@ const Content = styled.div`
 `;
 
 
-const Badge = ({ children }) => (
+const Badge = ({ left, right }) => (
   <Block>
     <Container>
       <Content>
-        {children}
+        {left}
       </Content>
     </Container>
+    {right && (
+      <Container right>
+        <Content>
+          {right}
+        </Content>
+      </Container>
+    )}
   </Block>
 );
 

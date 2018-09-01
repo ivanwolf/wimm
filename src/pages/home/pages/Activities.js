@@ -10,8 +10,8 @@ import ActivityForm from './activities/ActivityForm';
 import Summary from './activities/Summary';
 import Badge from '../../../components/Badge';
 import ActivityList from './activities/ActivityList';
-import { accountsToUpdate, categoriesToUpdate, activitiesByDay } from '../../../utils/lambda';
-import { dateLabel } from '../../../utils/format';
+import { accountsToUpdate, categoriesToUpdate, activitiesByDay, expensesByDay } from '../../../utils/lambda';
+import { dateLabel, formatSum } from '../../../utils/format';
 
 class Activities extends Component {
   constructor(props) {
@@ -56,7 +56,9 @@ class Activities extends Component {
       openForm,
       toggleOpenForm
     } = this.props;
-    const activitiesList = activitiesByDay(activities);
+    const activityLists = activitiesByDay(activities);
+    const expenses = expensesByDay(activityLists);
+    console.log(expenses);
     return (
       <SelectItemProvider>
         <Container marginTop>
@@ -72,12 +74,15 @@ class Activities extends Component {
             handleEditItem={() => {}}
           />
           <Summary accounts={accounts} loading={accountsLoading} />
-          {Object.keys(activitiesList).map(key => (
+          {Object.keys(activityLists).map(key => (
             <Fragment>
-              <Badge>
-                {dateLabel(parseInt(key, 10))}
-              </Badge>
-              <ActivityList activities={activitiesList[key]} />
+              <div>
+                <Badge
+                  left={dateLabel(parseInt(key, 10))}
+                  right={expenses[key] > 0 && formatSum(expenses[key])}
+                />
+              </div>
+              <ActivityList activities={activityLists[key]} />
             </Fragment>
 
           ))}

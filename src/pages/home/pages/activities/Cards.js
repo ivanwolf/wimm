@@ -73,7 +73,7 @@ const IncomeCard = ({ activity, ...props }) => {
       renderRight={() => (
         <Fragment>
           <CardHeader color={colors.green}>
-            {`$${formatSum(activity.sum)}`}
+            {formatSum(activity.sum)}
           </CardHeader>
           <CardItem>
             {activity.account.name}
@@ -109,7 +109,7 @@ const ExpenseCard = ({ activity, ...props }) => {
       renderRight={() => (
         <Fragment>
           <CardHeader color={category.color}>
-            {`$${formatSum(sum)}`}
+            {formatSum(sum)}
           </CardHeader>
           <CardItem>
             {account.name}
@@ -142,7 +142,7 @@ const TransferCard = ({ activity, ...props }) => {
       renderRight={() => (
         <Fragment>
           <CardHeader color={colors.yellow}>
-            {`$${formatSum(activity.sum)}`}
+            {formatSum(activity.sum)}
           </CardHeader>
           <CardItem>
             {activity.from.name}
@@ -174,7 +174,7 @@ const CreateCard = ({ activity, ...props }) => {
       renderRight={() => (
         <Fragment>
           <CardHeader color={colors.green}>
-            {`$${formatSum(activity.sum)}`}
+            {formatSum(activity.sum)}
           </CardHeader>
           <CardItem>
             {activity.account.name}

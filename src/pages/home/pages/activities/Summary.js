@@ -18,7 +18,9 @@ const Summary = ({ accounts, loading }) => {
   }
   return (
     <Fragment>
-      <Badge>Balance</Badge>
+      <Badge
+        left="Cuentas"
+      />
       <div>
         <Card>
           <Col>
@@ -31,7 +33,7 @@ const Summary = ({ accounts, loading }) => {
           <Col>
             {accounts.map(acc => acc.active && (
               <CardHeader key={acc.id}>
-                {`$${formatSum(acc.balance)}`}
+                {formatSum(acc.balance)}
               </CardHeader>
             ))}
           </Col>

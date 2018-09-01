@@ -84,3 +84,13 @@ export const activitiesByDay = activities => activities.reduce((res, act) => {
   }
   return res;
 }, {});
+
+export const expensesByDay = activityLists => Object.keys(activityLists).reduce((res, key) => {
+  res[key] = activityLists[key].reduce((sum, activity) => {
+    if (activity.type === 'expense') {
+      return sum + activity.sum;
+    }
+    return sum;
+  }, 0);
+  return res;
+}, {});
