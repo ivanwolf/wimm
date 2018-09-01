@@ -76,7 +76,6 @@ class Provider extends Component {
 
   updateStore(change) {
     const docs = this.state[change.collection];
-    console.log('Entramos', change);
     if (change.type === 'load') {
       this.setState({
         [loadingKey(change.collection)]: false,

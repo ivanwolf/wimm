@@ -1,4 +1,5 @@
 import React, { Component, Fragment } from 'react';
+import PropTypes from 'prop-types';
 import { HomeAppBar } from '../../../components/AppBar';
 import { connect } from '../../../components/utils/Provider';
 import SelectItemProvider from '../../../components/utils/SelectItem';
@@ -9,7 +10,8 @@ import ActivityForm from './activities/ActivityForm';
 import Summary from './activities/Summary';
 import Badge from '../../../components/Badge';
 import ActivityList from './activities/ActivityList';
-import { accountsToUpdate, categoriesToUpdate, activitiesByDay, dateLabel } from '../../../utils/lambda';
+import { accountsToUpdate, categoriesToUpdate, activitiesByDay } from '../../../utils/lambda';
+import { dateLabel } from '../../../utils/format';
 
 class Activities extends Component {
   constructor(props) {
@@ -84,6 +86,12 @@ class Activities extends Component {
     );
   }
 }
+
+Activities.propTypes = {
+  fetchAccounts: PropTypes.func.isRequired,
+  fetchActivities: PropTypes.func.isRequired,
+  fetchCategories: PropTypes.func.isRequired,
+};
 
 export default connect(
   'activities',

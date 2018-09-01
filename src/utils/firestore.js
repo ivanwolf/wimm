@@ -39,7 +39,6 @@ export const addListener = (user, collection, listener) => (
           ...change.doc.data(),
         });
       });
-      console.log(collection, docs);
       listener({
         type,
         collection,

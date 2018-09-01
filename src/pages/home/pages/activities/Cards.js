@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { css } from 'styled-components';
 import { Col } from '../../../../components/Layout';
-import { formatSum } from '../../../../utils/format';
+import { formatSum, formatTime } from '../../../../utils/format';
 import {
   Card, CardHeader, CardItem,
 } from '../../../../components/Card';
@@ -52,7 +52,7 @@ BaseCard.propTypes = {
 
 
 const IncomeCard = ({ activity, ...props }) => {
-  const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  const date = new Date(activity.createdAt);
   return (
     <BaseCard
       {...props}
@@ -63,7 +63,7 @@ const IncomeCard = ({ activity, ...props }) => {
             Ingreso
           </CardHeader>
           <CardItem>
-            {`${date}`}
+            {formatTime(date)}
           </CardItem>
           <CardItem>
             {activity.detail}
@@ -85,7 +85,7 @@ const IncomeCard = ({ activity, ...props }) => {
 };
 
 const ExpenseCard = ({ activity, ...props }) => {
-  const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  const date = new Date(activity.createdAt);
   const {
     category, detail, sum, account,
   } = activity;
@@ -99,7 +99,7 @@ const ExpenseCard = ({ activity, ...props }) => {
             {`${category.name}`}
           </CardHeader>
           <CardItem>
-            {`${date}`}
+            {formatTime(date)}
           </CardItem>
           <CardItem>
             {detail}
@@ -121,7 +121,7 @@ const ExpenseCard = ({ activity, ...props }) => {
 };
 
 const TransferCard = ({ activity, ...props }) => {
-  const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  const date = new Date(activity.createdAt);
   return (
     <BaseCard
       {...props}
@@ -132,7 +132,7 @@ const TransferCard = ({ activity, ...props }) => {
             Traspaso
           </CardHeader>
           <CardItem>
-            {`${date}`}
+            {formatTime(date)}
           </CardItem>
           <CardItem>
             {activity.detail}
@@ -156,7 +156,7 @@ const TransferCard = ({ activity, ...props }) => {
 };
 
 const CreateCard = ({ activity, ...props }) => {
-  const date = new Date(activity.createdAt).toTimeString().split(' ')[0];
+  const date = new Date(activity.createdAt);
   return (
     <BaseCard
       {...props}
@@ -167,7 +167,7 @@ const CreateCard = ({ activity, ...props }) => {
             Nueva cuenta
           </CardHeader>
           <CardItem>
-            {`${date}`}
+            {formatTime(date)}
           </CardItem>
         </Fragment>
       )}
