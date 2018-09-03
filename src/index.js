@@ -1,20 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
-import firebase from 'firebase';
 import Loadable from 'react-loadable';
 import Splash from './pages/Splash';
-import registerServiceWorker from './registerServiceWorker';
 import './index.css';
+import getFirebaseApp from './firebaseApp';
 
-const config = {
-  apiKey: 'AIzaSyDoDRc6clLDFn6SQITBxlzIwXKotLIC480',
-  authDomain: 'wimm-70965.firebaseapp.com',
-  databaseURL: 'https://wimm-70965.firebaseio.com',
-  projectId: 'wimm-70965',
-  storageBucket: 'wimm-70965.appspot.com',
-  messagingSenderId: '755630054891',
-};
+import registerServiceWorker from './registerServiceWorker';
 
 // registerServiceWorker();
 
@@ -41,17 +33,13 @@ const renderSplash = () => {
 
 renderSplash();
 
-firebase.initializeApp(config);
-
-firebase.auth().onAuthStateChanged((user) => {
+getFirebaseApp().auth().onAuthStateChanged((user) => {
   if (user) {
     renderApp(user);
   } else {
     renderApp(null)
   }
 });
-
-
 
 
 

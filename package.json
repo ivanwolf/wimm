@@ -1,6 +1,6 @@
 {
   "name": "wimm",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "private": true,
   "dependencies": {
     "eslint": "^4.19.1",
@@ -17,7 +17,9 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "deploy": "firebase deploy",
+    "serve": "serve -s build"
   },
   "devDependencies": {
     "eslint-config-airbnb": "^17.0.0",

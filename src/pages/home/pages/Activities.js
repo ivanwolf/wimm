@@ -58,7 +58,6 @@ class Activities extends Component {
     } = this.props;
     const activityLists = activitiesByDay(activities);
     const expenses = expensesByDay(activityLists);
-    console.log(expenses);
     return (
       <SelectItemProvider>
         <Container marginTop>
