@@ -6,9 +6,10 @@ workbox.routing.registerNavigationRoute('/index.html');
 
 workbox.routing.registerRoute(
   /^https:\/\/fonts\.googleapis\.com/,
-  workbox.strategies.staleWhileRevalidate({
+  workbox.strategies.cacheFirst({
     cacheName: 'google-fonts-stylesheets',
   }),
 );
+
 
 workbox.precaching.precacheAndRoute([]);
