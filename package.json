@@ -1,6 +1,6 @@
 {
   "name": "wimm",
-  "version": "1.3.4",
+  "version": "1.5.0",
   "private": true,
   "dependencies": {
     "eslint": "^4.19.1",
@@ -18,7 +18,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
-    "deploy": "firebase deploy",
+    "deploy": "workbox injectManifest workbox-config.js && firebase deploy",
     "serve": "workbox injectManifest workbox-config.js && serve -s build"
   },
   "devDependencies": {
