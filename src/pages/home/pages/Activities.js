@@ -73,8 +73,8 @@ class Activities extends Component {
             handleEditItem={() => {}}
           />
           <Summary accounts={accounts} loading={accountsLoading} />
-          {Object.keys(activityLists).map(key => (
-            <Fragment>
+          {Object.keys(activityLists).map((key, index) => (
+            <Fragment key={index}>
               <div>
                 <Badge
                   left={dateLabel(parseInt(key, 10))}

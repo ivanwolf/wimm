@@ -44,7 +44,6 @@ const ActivityList = ({ activities, loading }) => (
 
 ActivityList.propTypes = {
   activities: PropTypes.array.isRequired,
-  loading: PropTypes.bool.isRequired,
 };
 
 export default ActivityList;

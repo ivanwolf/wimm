@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Col } from '../../../../components/Layout';
 import { TextInput, Button } from '../../../../components/Input';
-import { Dropdown, LocationDropdown } from '../../../../components/Dropdown';
+import { Dropdown } from '../../../../components/Dropdown';
 import { connect } from '../../../../components/utils/Provider';
 
 
@@ -14,7 +14,6 @@ class ActivityForm extends Component {
       accountId: '',
       categoryId: '',
       detail: '',
-      placeId: '',
       sumError: '',
       submitting: false,
     };
@@ -69,9 +68,9 @@ class ActivityForm extends Component {
       };
 
       // Create activity in firestore
-      await createActivity(activity);
-      await updateAccounts([accountData]);
-      await updateCategories([categoryData]);
+      createActivity(activity);
+      updateAccounts([accountData]);
+      updateCategories([categoryData]);
 
       // Clear state
       await this.setState({
@@ -86,6 +85,7 @@ class ActivityForm extends Component {
       // Close form
       toggleOpenForm();
     } catch (err) {
+      console.log('Entramos', err);
       this.setState({ submitting: false });
     }
   }

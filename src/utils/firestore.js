@@ -1,11 +1,7 @@
-import getFirebaseApp from '../firebaseApp';
+import firebase from 'firebase';
 import { initialAccounts, initialCategories } from '../config/initialSetup';
 
-const firestore = getFirebaseApp().firestore();
-const settings = { timestampsInSnapshots: true };
-firestore.settings(settings);
-
-const getStore = () => firestore;
+const getStore = () => firebase.firestore();
 
 export const getUserDoc = user => getStore().collection('users').doc(user.uid);
 
@@ -53,7 +49,6 @@ export const fetchCollection = (user, collection) => (
   getUserDoc(user)
     .collection(collection)
     .get()
-    .catch(err => console.log(err))
 );
 
 /* CREATES */
@@ -63,7 +58,6 @@ export const createDocument = (user, collection, data) => (
     .collection(collection)
     .add(data)
     .then(docRef => docRef.id)
-    .catch(console.log)
 );
 
 /* UPDATES */
