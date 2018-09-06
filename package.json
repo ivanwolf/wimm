@@ -19,7 +19,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "deploy": "firebase deploy",
-    "serve": "serve -s build"
+    "serve": "workbox injectManifest workbox-config.js && serve -s build"
   },
   "devDependencies": {
     "eslint-config-airbnb": "^17.0.0",

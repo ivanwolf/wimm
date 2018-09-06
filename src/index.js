@@ -8,7 +8,8 @@ import getFirebaseApp from './firebaseApp';
 
 import registerServiceWorker from './registerServiceWorker';
 
-// registerServiceWorker();
+
+registerServiceWorker();
 
 const App = Loadable({
   loader: () => import('./App'),

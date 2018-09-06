@@ -18,9 +18,9 @@ const Summary = ({ accounts, loading }) => {
   }
   return (
     <Fragment>
-      <Badge
-        left="Cuentas"
-      />
+      <div>
+        <Badge left="Cuentas" />
+      </div>
       <div>
         <Card>
           <Col>
